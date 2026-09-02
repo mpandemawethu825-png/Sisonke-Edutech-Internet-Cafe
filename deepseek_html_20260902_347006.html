@@ -1,0 +1,2843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
+    <meta name="theme-color" content="#0d47a1" />
+    <title>SISONKE HUB · Enterprise</title>
+
+    <!-- Google Fonts & Material Symbols -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <!-- Bootstrap 5 + Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js">
+    </script>
+
+    <!-- Dexie.js (IndexedDB wrapper) -->
+    <script src="https://cdn.jsdelivr.net/npm/dexie@3.2.5/dist/dexie.min.js">
+    </script>
+
+    <!-- Day.js -->
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/dayjs.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/plugin/relativeTime.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/plugin/utc.js">
+    </script>
+
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js">
+    </script>
+
+    <!-- SheetJS (XLSX) -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js">
+    </script>
+
+    <!-- Lodash -->
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js">
+    </script>
+
+    <!-- Fuse.js -->
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js">
+    </script>
+
+    <!-- QRCode.js -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js">
+    </script>
+
+    <!-- DOMPurify -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.9/dist/purify.min.js">
+    </script>
+
+    <style>
+        /* ===== CSS VARIABLES (Material 3 + Glassmorphism) ===== */
+        :root {
+            --md-primary: #0d47a1;
+            --md-primary-light: #5472d3;
+            --md-primary-dark: #002171;
+            --md-secondary: #00695c;
+            --md-tertiary: #e65100;
+            --md-surface: #f5f7fa;
+            --md-surface-dim: #e8ecf1;
+            --md-on-surface: #1a1a2e;
+            --md-on-surface-muted: #5a5a7a;
+            --md-surface-container: #ffffff;
+            --md-surface-container-high: #f0f2f6;
+            --md-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --md-shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.14);
+            --glass-bg: rgba(255, 255, 255, 0.70);
+            --glass-border: rgba(255, 255, 255, 0.25);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
+            --radius-xs: 8px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --nav-width: 72px;
+            --nav-width-expanded: 260px;
+        }
+
+        /* Dark Mode */
+        [data-theme="dark"] {
+            --md-surface: #0f0f1a;
+            --md-surface-dim: #1a1a2e;
+            --md-on-surface: #e8ecf1;
+            --md-on-surface-muted: #9a9ab0;
+            --md-surface-container: #1e1e32;
+            --md-surface-container-high: #2a2a42;
+            --glass-bg: rgba(30, 30, 50, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --md-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --md-shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.4);
+        }
+
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: var(--font);
+            background: var(--md-surface);
+            color: var(--md-on-surface);
+            transition: background var(--transition), color var(--transition);
+            overflow-x: hidden;
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--md-surface-dim);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--md-primary-light);
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--md-primary);
+        }
+
+        /* ===== GLASSMORPHISM UTILITY ===== */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px) saturate(1.4);
+            -webkit-backdrop-filter: blur(16px) saturate(1.4);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            border-radius: var(--radius-md);
+            transition: all var(--transition);
+        }
+        .glass:hover {
+            box-shadow: var(--md-shadow-hover);
+        }
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px) saturate(1.3);
+            -webkit-backdrop-filter: blur(12px) saturate(1.3);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: 1.25rem 1.5rem;
+            transition: all var(--transition);
+            box-shadow: var(--glass-shadow);
+        }
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--md-shadow-hover);
+        }
+
+        /* ===== SIDEBAR ===== */
+        .app-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--nav-width);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(1.5);
+            -webkit-backdrop-filter: blur(20px) saturate(1.5);
+            border-right: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            z-index: 1050;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0;
+            transition: width var(--transition), background var(--transition);
+            overflow: hidden;
+        }
+        .app-sidebar:hover {
+            width: var(--nav-width-expanded);
+        }
+        .app-sidebar .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0 1rem;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+        .app-sidebar .brand .logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--md-primary), var(--md-primary-light));
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 800;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(13, 71, 161, 0.3);
+        }
+        .app-sidebar .brand .brand-text {
+            font-weight: 700;
+            font-size: 1.05rem;
+            letter-spacing: -0.02em;
+            color: var(--md-on-surface);
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+        .app-sidebar:hover .brand .brand-text {
+            opacity: 1;
+        }
+
+        .app-sidebar .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        .app-sidebar .nav-list li {
+            width: 100%;
+        }
+        .app-sidebar .nav-list li a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.65rem 1rem;
+            margin: 0.2rem 0.5rem;
+            border-radius: var(--radius-sm);
+            color: var(--md-on-surface-muted);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all var(--transition);
+            white-space: nowrap;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+        .app-sidebar .nav-list li a .material-symbols-outlined {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            width: 28px;
+            text-align: center;
+        }
+        .app-sidebar .nav-list li a .nav-label {
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+        .app-sidebar:hover .nav-list li a .nav-label {
+            opacity: 1;
+        }
+        .app-sidebar .nav-list li a:hover,
+        .app-sidebar .nav-list li a.active {
+            background: rgba(13, 71, 161, 0.12);
+            color: var(--md-primary);
+        }
+        .app-sidebar .nav-list li a.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            height: 60%;
+            width: 4px;
+            background: var(--md-primary);
+            border-radius: 0 4px 4px 0;
+        }
+        [data-theme="dark"] .app-sidebar .nav-list li a:hover,
+        [data-theme="dark"] .app-sidebar .nav-list li a.active {
+            background: rgba(84, 114, 211, 0.18);
+            color: #8ab4f8;
+        }
+
+        .app-sidebar .sidebar-footer {
+            padding: 0.5rem 1rem;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            border-top: 1px solid var(--glass-border);
+        }
+        .app-sidebar .sidebar-footer .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius-xs);
+            cursor: pointer;
+            transition: background var(--transition);
+            color: var(--md-on-surface-muted);
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: none;
+            background: transparent;
+            width: 100%;
+        }
+        .app-sidebar .sidebar-footer .theme-toggle:hover {
+            background: rgba(13, 71, 161, 0.08);
+        }
+        .app-sidebar .sidebar-footer .theme-toggle .label {
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+        .app-sidebar:hover .sidebar-footer .theme-toggle .label {
+            opacity: 1;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            margin-left: var(--nav-width);
+            padding: 1.5rem 2rem 3rem;
+            min-height: 100vh;
+            transition: margin-left var(--transition);
+        }
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 1rem 1rem 3rem;
+            }
+            .app-sidebar {
+                transform: translateX(-100%);
+                width: var(--nav-width-expanded);
+                transition: transform var(--transition);
+            }
+            .app-sidebar.open {
+                transform: translateX(0);
+            }
+            .app-sidebar .brand .brand-text,
+            .app-sidebar .nav-list li a .nav-label,
+            .app-sidebar .sidebar-footer .theme-toggle .label {
+                opacity: 1 !important;
+            }
+            .mobile-toggle {
+                display: flex !important;
+            }
+        }
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 1060;
+            background: var(--md-primary);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            font-size: 1.8rem;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(13, 71, 161, 0.35);
+            transition: all var(--transition);
+            cursor: pointer;
+        }
+        .mobile-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 32px rgba(13, 71, 161, 0.45);
+        }
+
+        /* ===== PAGE SECTIONS ===== */
+        .page-section {
+            display: none;
+            animation: fadeUp 0.4s ease;
+        }
+        .page-section.active {
+            display: block;
+        }
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-weight: 700;
+            font-size: 1.6rem;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+        }
+        .section-subtitle {
+            color: var(--md-on-surface-muted);
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        /* ===== STAT CARDS ===== */
+        .stat-card {
+            padding: 1.25rem 1.5rem;
+            border-radius: var(--radius-md);
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            transition: all var(--transition);
+            height: 100%;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--md-shadow-hover);
+        }
+        .stat-card .stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+        .stat-card .stat-icon.blue {
+            background: linear-gradient(135deg, #0d47a1, #5472d3);
+        }
+        .stat-card .stat-icon.green {
+            background: linear-gradient(135deg, #00695c, #2e7d32);
+        }
+        .stat-card .stat-icon.red {
+            background: linear-gradient(135deg, #b71c1c, #d32f2f);
+        }
+        .stat-card .stat-icon.yellow {
+            background: linear-gradient(135deg, #e65100, #f57c00);
+        }
+        .stat-card .stat-icon.purple {
+            background: linear-gradient(135deg, #4a148c, #7b1fa2);
+        }
+        .stat-card .stat-icon.teal {
+            background: linear-gradient(135deg, #004d40, #00897b);
+        }
+        .stat-card .stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+        .stat-card .stat-label {
+            font-size: 0.85rem;
+            color: var(--md-on-surface-muted);
+            font-weight: 500;
+            margin-top: 0.1rem;
+        }
+        .stat-card .stat-change {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.15rem 0.6rem;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 0.3rem;
+        }
+        .stat-card .stat-change.up {
+            color: #2e7d32;
+            background: rgba(46, 125, 50, 0.12);
+        }
+        .stat-card .stat-change.down {
+            color: #c62828;
+            background: rgba(198, 40, 40, 0.12);
+        }
+
+        /* ===== CHARTS ===== */
+        .chart-container {
+            position: relative;
+            height: 260px;
+            width: 100%;
+        }
+        .chart-container-sm {
+            height: 180px;
+        }
+
+        /* ===== TABLES ===== */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: var(--radius-sm);
+        }
+        .table-wrap table {
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+        .table-wrap table th {
+            font-weight: 600;
+            color: var(--md-on-surface-muted);
+            border-bottom: 2px solid var(--glass-border);
+            padding: 0.75rem 0.5rem;
+        }
+        .table-wrap table td {
+            padding: 0.65rem 0.5rem;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .table-wrap table tr:hover td {
+            background: rgba(13, 71, 161, 0.04);
+        }
+
+        /* ===== FORMS ===== */
+        .form-control,
+        .form-select {
+            background: var(--glass-bg);
+            border: 1.5px solid var(--glass-border);
+            border-radius: var(--radius-xs);
+            color: var(--md-on-surface);
+            padding: 0.6rem 1rem;
+            font-size: 0.95rem;
+            transition: all var(--transition);
+            backdrop-filter: blur(8px);
+        }
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--md-primary);
+            box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.15);
+            background: var(--glass-bg);
+            color: var(--md-on-surface);
+        }
+        .form-label {
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--md-on-surface-muted);
+        }
+        .btn {
+            border-radius: var(--radius-xs);
+            font-weight: 600;
+            padding: 0.55rem 1.4rem;
+            font-size: 0.9rem;
+            transition: all var(--transition);
+            border: none;
+        }
+        .btn-primary {
+            background: var(--md-primary);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: var(--md-primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(13, 71, 161, 0.3);
+        }
+        .btn-outline-primary {
+            border: 1.5px solid var(--md-primary);
+            color: var(--md-primary);
+            background: transparent;
+        }
+        .btn-outline-primary:hover {
+            background: var(--md-primary);
+            color: #fff;
+        }
+        .btn-success {
+            background: #2e7d32;
+            color: #fff;
+        }
+        .btn-success:hover {
+            background: #1b5e20;
+        }
+        .btn-danger {
+            background: #c62828;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background: #b71c1c;
+        }
+        .btn-warning {
+            background: #f57c00;
+            color: #fff;
+        }
+        .btn-warning:hover {
+            background: #e65100;
+        }
+        .btn-outline-secondary {
+            border: 1.5px solid var(--md-on-surface-muted);
+            color: var(--md-on-surface-muted);
+            background: transparent;
+        }
+        .btn-outline-secondary:hover {
+            background: var(--md-on-surface-muted);
+            color: #fff;
+        }
+
+        /* ===== BADGE ===== */
+        .badge-md {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.75rem;
+        }
+
+        /* ===== AI ASSISTANT ===== */
+        .ai-chat {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+        .ai-chat .msg {
+            padding: 0.7rem 1rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 0.5rem;
+            max-width: 85%;
+            animation: fadeUp 0.3s ease;
+        }
+        .ai-chat .msg.user {
+            background: var(--md-primary);
+            color: #fff;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+        .ai-chat .msg.assistant {
+            background: var(--md-surface-container-high);
+            color: var(--md-on-surface);
+            border-bottom-left-radius: 4px;
+        }
+        .ai-chat .msg .time {
+            font-size: 0.65rem;
+            opacity: 0.6;
+            margin-top: 0.2rem;
+            display: block;
+        }
+
+        /* ===== BACKUP ===== */
+        .backup-item {
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-xs);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        /* ===== POS ===== */
+        .pos-product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 0.75rem;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 0.5rem 0;
+        }
+        .pos-product-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            transition: all var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+        .pos-product-card:hover {
+            transform: scale(1.02);
+            box-shadow: var(--md-shadow-hover);
+            border-color: var(--md-primary);
+        }
+        .pos-product-card .product-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 0.15rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .pos-product-card .product-price {
+            color: var(--md-primary);
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        .pos-product-card .product-stock {
+            font-size: 0.7rem;
+            color: var(--md-on-surface-muted);
+        }
+        .pos-product-card .service-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: var(--md-tertiary);
+            color: #fff;
+            font-size: 0.55rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .pos-cart-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .pos-cart-item .item-name {
+            flex: 1;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .pos-cart-item .item-qty {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .pos-cart-item .item-qty button {
+            padding: 0 0.4rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 4px;
+            border: 1px solid var(--glass-border);
+            background: transparent;
+        }
+        .pos-cart-item .item-qty span {
+            min-width: 1.5rem;
+            text-align: center;
+        }
+        .pos-cart-item .item-total {
+            font-weight: 600;
+            min-width: 4rem;
+            text-align: right;
+        }
+        .pos-cart-item .item-remove {
+            color: #c62828;
+            cursor: pointer;
+            padding: 0 0.25rem;
+        }
+        .pos-summary {
+            border-top: 2px solid var(--glass-border);
+            padding-top: 0.75rem;
+            margin-top: 0.5rem;
+        }
+        .pos-summary .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+        }
+        .pos-summary .summary-row.total {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 576px) {
+            .stat-card .stat-value {
+                font-size: 1.3rem;
+            }
+            .section-title {
+                font-size: 1.3rem;
+            }
+            .glass-card {
+                padding: 1rem;
+            }
+            .main-content {
+                padding: 0.75rem 0.75rem 3rem;
+            }
+            .pos-product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+        }
+        @media (min-width: 768px) and (max-width: 992px) {
+            .main-content {
+                padding: 1rem 1.5rem 3rem;
+            }
+        }
+
+        /* ===== PRINT ===== */
+        @media print {
+            .app-sidebar,
+            .mobile-toggle {
+                display: none !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+                padding: 0.5in !important;
+            }
+            .glass,
+            .glass-card,
+            .stat-card {
+                background: #fff !important;
+                backdrop-filter: none !important;
+                border-color: #ddd !important;
+                box-shadow: none !important;
+            }
+            .page-section {
+                display: block !important;
+            }
+            .page-section:not(.active) {
+                display: none !important;
+            }
+        }
+
+        /* ===== MISC ===== */
+        .cursor-pointer {
+            cursor: pointer;
+        }
+        .text-muted-light {
+            color: var(--md-on-surface-muted);
+        }
+        .gap-1 {
+            gap: 0.5rem;
+        }
+        .gap-2 {
+            gap: 1rem;
+        }
+        .flex-wrap {
+            flex-wrap: wrap;
+        }
+        .w-auto {
+            width: auto;
+        }
+        .overflow-hidden {
+            overflow: hidden;
+        }
+        .border-radius-sm {
+            border-radius: var(--radius-xs);
+        }
+        .border-radius-md {
+            border-radius: var(--radius-md);
+        }
+
+        .toast-container-custom {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 9999;
+            max-width: 380px;
+            width: 100%;
+        }
+        .toast-custom {
+            background: var(--md-surface-container);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: 1rem 1.5rem;
+            box-shadow: var(--md-shadow-hover);
+            backdrop-filter: blur(16px);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideUp 0.35s ease;
+        }
+        .toast-custom .icon {
+            font-size: 1.8rem;
+        }
+        .toast-custom .msg {
+            font-weight: 500;
+            flex: 1;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .tab-content-scroll {
+            max-height: 480px;
+            overflow-y: auto;
+        }
+
+        .pos-cart-scroll {
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        /* ===== RECONCILIATION BADGES ===== */
+        .recon-ok {
+            color: #2e7d32;
+            background: rgba(46, 125, 50, 0.12);
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+        .recon-warn {
+            color: #e65100;
+            background: rgba(230, 81, 0, 0.12);
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+        .recon-error {
+            color: #c62828;
+            background: rgba(198, 40, 40, 0.12);
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 0.15rem 0.6rem;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        .status-badge.completed {
+            background: rgba(46, 125, 50, 0.15);
+            color: #2e7d32;
+        }
+        .status-badge.pending {
+            background: rgba(245, 124, 0, 0.15);
+            color: #e65100;
+        }
+        .status-badge.cancelled {
+            background: rgba(198, 40, 40, 0.15);
+            color: #c62828;
+        }
+        .status-badge.voided {
+            background: rgba(108, 117, 125, 0.15);
+            color: #6c757d;
+        }
+        .status-badge.refunded {
+            background: rgba(13, 71, 161, 0.15);
+            color: #0d47a1;
+        }
+        .status-badge.archived {
+            background: rgba(108, 117, 125, 0.10);
+            color: #6c757d;
+        }
+
+        /* POS Reconciliation Summary */
+        .pos-recon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.75rem;
+        }
+        .pos-recon-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem;
+            text-align: center;
+            transition: all var(--transition);
+        }
+        .pos-recon-card .recon-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        .pos-recon-card .recon-label {
+            font-size: 0.75rem;
+            color: var(--md-on-surface-muted);
+        }
+
+        /* Combined ledger table */
+        .ledger-table td .type-badge {
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        .type-badge.sales { background: rgba(13, 71, 161, 0.15); color: #0d47a1; }
+        .type-badge.income { background: rgba(46, 125, 50, 0.15); color: #2e7d32; }
+        .type-badge.expense { background: rgba(198, 40, 40, 0.15); color: #c62828; }
+        .type-badge.cv { background: rgba(230, 81, 0, 0.15); color: #e65100; }
+        .type-badge.sweets { background: rgba(156, 39, 176, 0.15); color: #6a1b9a; }
+        .type-badge.refund { background: rgba(255, 193, 7, 0.15); color: #f57f17; }
+        .type-badge.adjustment { background: rgba(96, 125, 139, 0.15); color: #455a64; }
+
+        .quick-entry-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+        @media (max-width: 768px) {
+            .quick-entry-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== MOBILE TOGGLE ===== -->
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation">
+        <span class="material-symbols-outlined">menu</span>
+    </button>
+
+    <!-- ===== SIDEBAR ===== -->
+    <nav class="app-sidebar" id="appSidebar" role="navigation" aria-label="Main navigation">
+        <div class="brand">
+            <div class="logo">SH</div>
+            <span class="brand-text">SISONKE HUB</span>
+        </div>
+
+        <ul class="nav-list" id="navList">
+            <li><a href="#" data-page="dashboard" class="active"><span class="material-symbols-outlined">dashboard</span><span class="nav-label">Dashboard</span></a></li>
+            <li><a href="#" data-page="pos"><span class="material-symbols-outlined">point_of_sale</span><span class="nav-label">POS · Unified</span></a></li>
+            <!-- Financial modules removed — all consolidated into POS -->
+            <li><a href="#" data-page="customers"><span class="material-symbols-outlined">people</span><span class="nav-label">Customers</span></a></li>
+            <li><a href="#" data-page="inventory"><span class="material-symbols-outlined">inventory_2</span><span class="nav-label">Inventory</span></a></li>
+            <li><a href="#" data-page="suppliers"><span class="material-symbols-outlined">local_shipping</span><span class="nav-label">Suppliers</span></a></li>
+            <li><a href="#" data-page="perfume"><span class="material-symbols-outlined">spa</span><span class="nav-label">Perfumes</span></a></li>
+            <li><a href="#" data-page="cv-local"><span class="material-symbols-outlined">description</span><span class="nav-label">CV Local</span></a></li>
+            <li><a href="#" data-page="cv-online"><span class="material-symbols-outlined">cloud_upload</span><span class="nav-label">CV Online</span></a></li>
+            <li><a href="#" data-page="sweets"><span class="material-symbols-outlined">cake</span><span class="nav-label">Daily Sweets</span></a></li>
+            <li><a href="#" data-page="reports"><span class="material-symbols-outlined">assessment</span><span class="nav-label">Reports</span></a></li>
+            <li><a href="#" data-page="reconciliation"><span class="material-symbols-outlined">fact_check</span><span class="nav-label">Reconciliation</span></a></li>
+            <li><a href="#" data-page="ai"><span class="material-symbols-outlined">smart_toy</span><span class="nav-label">AI Assistant</span></a></li>
+            <li><a href="#" data-page="backup"><span class="material-symbols-outlined">backup</span><span class="nav-label">Backup</span></a></li>
+            <li><a href="#" data-page="settings"><span class="material-symbols-outlined">settings</span><span class="nav-label">Settings</span></a></li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                <span class="material-symbols-outlined">dark_mode</span>
+                <span class="label" id="themeLabel">Dark Mode</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content" id="mainContent">
+
+        <!-- ===== DASHBOARD ===== -->
+        <section class="page-section active" id="page-dashboard">
+            <div class="d-flex flex-wrap justify-content-between align-items-start mb-3">
+                <div>
+                    <h1 class="section-title">Dashboard</h1>
+                    <p class="section-subtitle">Real-time business overview for SISONKE HUB</p>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn btn-outline-primary btn-sm" onclick="refreshDashboard()"><span class="material-symbols-outlined" style="font-size:1.2rem;">refresh</span> Refresh</button>
+                    <button class="btn btn-outline-success btn-sm" onclick="runFullReconciliation()"><span class="material-symbols-outlined" style="font-size:1.2rem;">fact_check</span> Reconcile</button>
+                </div>
+            </div>
+
+            <!-- Stats Row -->
+            <div class="row g-3 mb-4" id="dashStats">
+                <div class="col-6 col-lg-3"><div class="stat-card"><div class="stat-icon blue"><span class="material-symbols-outlined">trending_up</span></div><div class="stat-value" id="dashRevenue">R0</div><div class="stat-label">Today's Revenue</div></div></div>
+                <div class="col-6 col-lg-3"><div class="stat-card"><div class="stat-icon green"><span class="material-symbols-outlined">account_balance</span></div><div class="stat-value" id="dashProfit">R0</div><div class="stat-label">Today's Profit</div></div></div>
+                <div class="col-6 col-lg-3"><div class="stat-card"><div class="stat-icon red"><span class="material-symbols-outlined">receipt_long</span></div><div class="stat-value" id="dashExpenses">R0</div><div class="stat-label">Today's Expenses</div></div></div>
+                <div class="col-6 col-lg-3"><div class="stat-card"><div class="stat-icon yellow"><span class="material-symbols-outlined">people</span></div><div class="stat-value" id="dashCustomers">0</div><div class="stat-label">Customers Served</div></div></div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-lg-8">
+                    <div class="glass-card">
+                        <h6 class="fw-bold mb-2">Revenue Trend (Last 7 Days)</h6>
+                        <div class="chart-container"><canvas id="dashChartRevenue"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="glass-card">
+                        <h6 class="fw-bold mb-2">Revenue Breakdown</h6>
+                        <div class="chart-container"><canvas id="dashChartPie"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="row g-3">
+                <div class="col-6 col-md-3"><div class="stat-card text-center"><div class="stat-value" id="dashWeekly">R0</div><div class="stat-label">Weekly Revenue</div></div></div>
+                <div class="col-6 col-md-3"><div class="stat-card text-center"><div class="stat-value" id="dashMonthly">R0</div><div class="stat-label">Monthly Revenue</div></div></div>
+                <div class="col-6 col-md-3"><div class="stat-card text-center"><div class="stat-value" id="dashGrowth">0%</div><div class="stat-label">Growth</div></div></div>
+                <div class="col-6 col-md-3"><div class="stat-card text-center"><div class="stat-value" id="dashHealth">92</div><div class="stat-label">Business Health</div></div></div>
+            </div>
+        </section>
+
+        <!-- ===== POS — UNIFIED FINANCIAL WORKSPACE ===== -->
+        <section class="page-section" id="page-pos">
+            <h2 class="section-title">Point of Sale · Unified Financial Workspace</h2>
+            <p class="section-subtitle">Manage sales, income, expenses, and reconciliation in one place</p>
+
+            <!-- ===== RECONCILIATION SUMMARY ===== -->
+            <div class="glass-card mb-3" id="posReconPanel">
+                <div class="d-flex flex-wrap justify-content-between align-items-center">
+                    <h6 class="fw-bold mb-0"><span class="material-symbols-outlined" style="font-size:1.2rem;">fact_check</span> Today's Financial Summary</h6>
+                    <div class="d-flex gap-1 flex-wrap">
+                        <button class="btn btn-sm btn-outline-primary" onclick="runPOSReconciliation()"><span class="material-symbols-outlined" style="font-size:1rem;">refresh</span> Reconcile</button>
+                        <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#incomeModal"><span class="material-symbols-outlined" style="font-size:1rem;">payments</span> Income</button>
+                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#expenseModal"><span class="material-symbols-outlined" style="font-size:1rem;">money_off</span> Expense</button>
+                    </div>
+                </div>
+                <hr />
+                <div class="pos-recon-grid" id="posReconGrid">
+                    <div class="pos-recon-card"><div class="recon-value" id="posReconSales">R0</div><div class="recon-label">Sales</div></div>
+                    <div class="pos-recon-card"><div class="recon-value" id="posReconIncome">R0</div><div class="recon-label">Other Income</div></div>
+                    <div class="pos-recon-card"><div class="recon-value" id="posReconExpenses">R0</div><div class="recon-label">Expenses</div></div>
+                    <div class="pos-recon-card"><div class="recon-value" id="posReconProfit">R0</div><div class="recon-label">Net Profit</div></div>
+                    <div class="pos-recon-card"><div class="recon-value" id="posReconStatus"><span class="recon-ok">✅ Reconciled</span></div><div class="recon-label">Status</div></div>
+                </div>
+                <div id="posReconDetails" class="small text-muted-light mt-2"></div>
+            </div>
+
+            <!-- ===== POS CHECKOUT & QUICK ENTRIES ===== -->
+            <div class="row g-3">
+                <!-- Left: POS Checkout -->
+                <div class="col-lg-6">
+                    <div class="glass-card">
+                        <h6 class="fw-bold mb-2">🛒 Checkout</h6>
+                        <div class="row g-1 mb-2">
+                            <div class="col-6">
+                                <select class="form-select" id="posProductSelect">
+                                    <option value="">Select product...</option>
+                                </select>
+                            </div>
+                            <div class="col-3">
+                                <input class="form-control" id="posQtyInput" type="number" value="1" min="1" />
+                            </div>
+                            <div class="col-3">
+                                <button class="btn btn-primary w-100" onclick="addSelectedProduct()">Add</button>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="d-flex gap-2 mb-2 flex-wrap">
+                            <input class="form-control flex-grow-1" id="posSearch" placeholder="Search products..." oninput="filterPOSProducts()" />
+                            <button class="btn btn-outline-secondary btn-sm" onclick="loadPOSProducts()"><span class="material-symbols-outlined" style="font-size:1.2rem;">refresh</span></button>
+                        </div>
+                        <div class="pos-product-grid" id="posProductGrid"></div>
+                        <hr />
+                        <div class="row g-1">
+                            <div class="col-6"><input class="form-control form-control-sm" id="posCustomName" placeholder="Custom item name" /></div>
+                            <div class="col-4"><input class="form-control form-control-sm" id="posCustomPrice" type="number" step="0.01" placeholder="Price" /></div>
+                            <div class="col-2"><button class="btn btn-sm btn-primary w-100" onclick="addCustomPOSItem()">+</button></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right: Cart + Quick Entry -->
+                <div class="col-lg-6">
+                    <div class="glass-card">
+                        <h6 class="fw-bold">Cart <span class="badge bg-secondary" id="cartCount">0</span></h6>
+                        <div class="pos-cart-scroll" id="posCartItems">
+                            <p class="text-muted-light small">No items in cart.</p>
+                        </div>
+                        <div class="pos-summary">
+                            <div class="summary-row"><span>Subtotal</span><span id="posSubtotal">R0.00</span></div>
+                            <div class="summary-row total"><span>Total</span><span id="posTotal">R0.00</span></div>
+                            <div class="row g-1 mt-2">
+                                <div class="col-6"><input class="form-control form-control-sm" id="posTendered" type="number" step="0.01" placeholder="Tendered" oninput="calculateChange()" /></div>
+                                <div class="col-6"><span class="form-control form-control-sm bg-light" id="posChange">Change: R0.00</span></div>
+                            </div>
+                            <div class="row g-1 mt-2">
+                                <div class="col-5"><select class="form-select form-select-sm" id="posCustomer"><option value="">Walk-in</option></select></div>
+                                <div class="col-3">
+                                    <select class="form-select form-select-sm" id="posPaymentMethod">
+                                        <option value="Cash">Cash</option>
+                                        <option value="Card">Card</option>
+                                        <option value="EFT">EFT</option>
+                                        <option value="Mobile">Mobile</option>
+                                    </select>
+                                </div>
+                                <div class="col-4 d-flex gap-1">
+                                    <button class="btn btn-sm btn-success flex-grow-1" onclick="completePOS()">Sell</button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="clearCart()">✕</button>
+                                </div>
+                            </div>
+                            <div class="mt-1 text-center">
+                                <button class="btn btn-sm btn-outline-secondary" onclick="voidLastSale()">Void Last Sale</button>
+                                <button class="btn btn-sm btn-outline-info" onclick="printReceipt()">🧾 Receipt</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== QUICK ENTRY FOR SALES, INCOME, EXPENSES (inline) ===== -->
+                    <div class="glass-card mt-3">
+                        <h6 class="fw-bold">📋 Quick Financial Entry</h6>
+                        <div class="quick-entry-grid">
+                            <!-- Sale -->
+                            <div class="border p-2 rounded-3">
+                                <label class="form-label small">Sale</label>
+                                <div class="d-flex gap-1">
+                                    <input class="form-control form-control-sm" id="quickSaleName" placeholder="Item" />
+                                    <input class="form-control form-control-sm" id="quickSaleQty" type="number" placeholder="Qty" value="1" style="width:60px;" />
+                                    <input class="form-control form-control-sm" id="quickSalePrice" type="number" step="0.01" placeholder="Price" style="width:80px;" />
+                                    <button class="btn btn-sm btn-primary" onclick="quickAddSale()">+</button>
+                                </div>
+                            </div>
+                            <!-- Income -->
+                            <div class="border p-2 rounded-3">
+                                <label class="form-label small">Other Income</label>
+                                <div class="d-flex gap-1">
+                                    <input class="form-control form-control-sm" id="quickIncomeSource" placeholder="Source" />
+                                    <input class="form-control form-control-sm" id="quickIncomeAmount" type="number" step="0.01" placeholder="Amount" style="width:80px;" />
+                                    <button class="btn btn-sm btn-success" onclick="quickAddIncome()">+</button>
+                                </div>
+                            </div>
+                            <!-- Expense -->
+                            <div class="border p-2 rounded-3">
+                                <label class="form-label small">Expense</label>
+                                <div class="d-flex gap-1">
+                                    <input class="form-control form-control-sm" id="quickExpenseCategory" placeholder="Category" />
+                                    <input class="form-control form-control-sm" id="quickExpenseAmount" type="number" step="0.01" placeholder="Amount" style="width:80px;" />
+                                    <button class="btn btn-sm btn-danger" onclick="quickAddExpense()">+</button>
+                                </div>
+                            </div>
+                            <!-- Refund / Adjustment -->
+                            <div class="border p-2 rounded-3">
+                                <label class="form-label small">Refund / Adjustment</label>
+                                <div class="d-flex gap-1">
+                                    <input class="form-control form-control-sm" id="quickRefundDesc" placeholder="Description" />
+                                    <input class="form-control form-control-sm" id="quickRefundAmount" type="number" step="0.01" placeholder="Amount" style="width:80px;" />
+                                    <button class="btn btn-sm btn-warning" onclick="quickAddRefund()">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-center">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="document.querySelectorAll('.quick-entry-grid input').forEach(i=>i.value='')">Clear All</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== COMBINED LEDGER ===== -->
+            <div class="glass-card mt-3">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <h6 class="fw-bold mb-0"><span class="material-symbols-outlined" style="font-size:1.2rem;">receipt_long</span> Today's Transactions</h6>
+                    <span class="text-muted-light small" id="ledgerCount">0 entries</span>
+                </div>
+                <hr />
+                <div class="table-wrap">
+                    <table class="table table-sm ledger-table" id="ledgerTable">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ledgerBody">
+                            <tr><td colspan="5" class="text-muted-light text-center">No transactions today.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== CUSTOMERS ===== -->
+        <section class="page-section" id="page-customers">
+            <h2 class="section-title">Customers</h2>
+            <p class="section-subtitle">Manage customer relationships</p>
+            <div class="glass-card mb-3">
+                <div class="row g-2">
+                    <div class="col-md-4"><input class="form-control" id="custName" placeholder="Full name" /></div>
+                    <div class="col-md-3"><input class="form-control" id="custPhone" placeholder="Phone" /></div>
+                    <div class="col-md-3"><input class="form-control" id="custEmail" placeholder="Email" /></div>
+                    <div class="col-md-2"><button class="btn btn-primary w-100" onclick="addCustomer()">Add</button></div>
+                </div>
+            </div>
+            <div class="glass-card"><div class="table-wrap"><table class="table"><thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Action</th></tr></thead><tbody id="customerBody"></tbody></table></div></div>
+        </section>
+
+        <!-- ===== INVENTORY ===== -->
+        <section class="page-section" id="page-inventory">
+            <h2 class="section-title">Inventory</h2>
+            <p class="section-subtitle">Track stock levels</p>
+            <div class="glass-card mb-3">
+                <div class="row g-2">
+                    <div class="col-md-3"><input class="form-control" id="invName" placeholder="Product" /></div>
+                    <div class="col-md-2"><input class="form-control" id="invQty" type="number" placeholder="Qty" /></div>
+                    <div class="col-md-2"><input class="form-control" id="invCost" type="number" step="0.01" placeholder="Cost" /></div>
+                    <div class="col-md-3"><input class="form-control" id="invSupplier" placeholder="Supplier" /></div>
+                    <div class="col-md-2"><button class="btn btn-warning w-100" onclick="addInventory()">Add</button></div>
+                </div>
+            </div>
+            <div class="glass-card"><div class="table-wrap"><table class="table"><thead><tr><th>Product</th><th>Qty</th><th>Cost</th><th>Supplier</th><th>Action</th></tr></thead><tbody id="inventoryBody"></tbody></table></div></div>
+        </section>
+
+        <!-- ===== SUPPLIERS ===== -->
+        <section class="page-section" id="page-suppliers">
+            <h2 class="section-title">Suppliers</h2>
+            <p class="section-subtitle">Manage supplier relationships</p>
+            <div class="glass-card mb-3">
+                <div class="row g-2">
+                    <div class="col-md-4"><input class="form-control" id="supName" placeholder="Supplier name" /></div>
+                    <div class="col-md-3"><input class="form-control" id="supContact" placeholder="Contact" /></div>
+                    <div class="col-md-3"><input class="form-control" id="supPhone" placeholder="Phone" /></div>
+                    <div class="col-md-2"><button class="btn btn-primary w-100" onclick="addSupplier()">Add</button></div>
+                </div>
+            </div>
+            <div class="glass-card"><div class="table-wrap"><table class="table"><thead><tr><th>Name</th><th>Contact</th><th>Phone</th><th>Action</th></tr></thead><tbody id="supplierBody"></tbody></table></div></div>
+        </section>
+
+        <!-- ===== PERFUME ===== -->
+        <section class="page-section" id="page-perfume">
+            <h2 class="section-title">Perfume Sales</h2>
+            <p class="section-subtitle">Track perfume inventory and sales</p>
+            <div class="glass-card mb-3">
+                <div class="row g-2">
+                    <div class="col-md-2"><input class="form-control" id="perfName" placeholder="Name" /></div>
+                    <div class="col-md-2"><input class="form-control" id="perfSell" type="number" step="0.01" placeholder="Sell Price" /></div>
+                    <div class="col-md-2"><input class="form-control" id="perfCost" type="number" step="0.01" placeholder="Cost Price" /></div>
+                    <div class="col-md-2"><input class="form-control" id="perfQty" type="number" placeholder="Qty" /></div>
+                    <div class="col-md-2"><input class="form-control" id="perfSupplier" placeholder="Supplier" /></div>
+                    <div class="col-md-2"><button class="btn btn-primary w-100" onclick="addPerfume()">Add</button></div>
+                </div>
+                <div class="mt-2"><small class="text-muted-light">Preloaded: R65, R70, R140, R160, R180, R350</small></div>
+            </div>
+            <div class="glass-card"><div class="table-wrap"><table class="table"><thead><tr><th>Name</th><th>Sell</th><th>Cost</th><th>Profit</th><th>Margin</th><th>Qty</th><th>Supplier</th><th>Action</th></tr></thead><tbody id="perfumeBody"></tbody></table></div></div>
+        </section>
+
+        <!-- ===== CV LOCAL ===== -->
+        <section class="page-section" id="page-cv-local">
+            <h2 class="section-title">Local CV Services</h2>
+            <p class="section-subtitle">CV (Word+PDF) — R50 | CV+Cover — R75 | CV+Cover+Attach — R120 | Indeed+CV — R150 | LinkedIn+CV — R150 | Indeed+LinkedIn+CV — R220</p>
+            <div class="glass-card mb-3">
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <select class="form-select" id="cvLocalType">
+                            <option value="CV">📄 CV (Word + PDF) — R50</option>
+                            <option value="CV+Cover">📄 CV + Cover Letter — R75</option>
+                            <option value="CV+Cover+Attach">📄 CV + Cover Letter + Attachments — R120</option>
+                            <option value="Indeed+CV">📄 Indeed Profile + CV — R150</option>
+                            <option value="LinkedIn+CV">📄 LinkedIn Profile + CV — R150</option>
+                            <option value="Indeed+LinkedIn+CV">📄 Indeed + LinkedIn + CV — R220</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2"><input class="form-control" id="cvLocalQty" type="number" placeholder="Qty" value="1" /></div>
+                    <div class="col-md-2"><input class="form-control" id="cvLocalDate" type="date" /></div>
+                    <div class="col-md-2"><select class="form-select" id="cvLocalStatus"><option value="Completed">Completed</option><option value="Pending">Pending</option></select></div>
+                    <div class="col-md-2"><button class="btn btn-success w-100" onclick="addCVLocal()">Record</button></div>
+                </div>
+            </div>
+            <div class="glass-card"><div class="table-wrap"><table class="table"><thead><tr><th>ID</th><th>Type</th><th>Qty</th><th>Total</th><th>Date</th><th>Status</th><th>Action</th></tr></thead><tbody id="cvLocalBody"></tbody></table></div></div>
+        </section>
+
+        <!-- ===== CV ONLINE ===== -->
+        <section class="page-section" id="page-cv-online">
+            <h2 class="section-title">Online CV Services</h2>
+            <p class="section-subtitle">CV — R40 | CV+Cover — R75</p>
+            <div class="glass-card mb-3">
+                <div class="row g-2">
+                    <div class="col-md-3"><select class="form-select" id="cvOnlineType"><option value="CV Online">CV — R40</option><option value="CV+Cover Online">CV + Cover Letter — R75</option></select></div>
+                    <div class="col-md-2"><input class="form-control" id="cvOnlineQty" type="number" placeholder="Qty" value="1" /></div>
+                    <div class="col-md-2"><input class="form-control" id="cvOnlineDate" type="date" /></div>
+                    <div class="col-md-2"><select class="form-select" id="cvOnlineStatus"><option value="Completed">Completed</option><option value="Pending">Pending</option></select></div>
+                    <div class="col-md-3"><button class="btn btn-success w-100" onclick="addCVOnline()">Record</button></div>
+                </div>
+            </div>
+            <div class="glass-card"><div class="table-wrap"><table class="table"><thead><tr><th>ID</th><th>Type</th><th>Qty</th><th>Total</th><th>Date</th><th>Status</th><th>Action</th></tr></thead><tbody id="cvOnlineBody"></tbody></table></div></div>
+        </section>
+
+        <!-- ===== DAILY SWEETS ===== -->
+        <section class="page-section" id="page-sweets">
+            <h2 class="section-title">Daily Sweets Income</h2>
+            <p class="section-subtitle">Fast daily income entry</p>
+            <div class="glass-card mb-3">
+                <div class="row g-2">
+                    <div class="col-md-3"><input class="form-control" id="sweetsAmount" type="number" step="0.01" placeholder="Amount e.g. 185" /></div>
+                    <div class="col-md-3"><input class="form-control" id="sweetsDate" type="date" /></div>
+                    <div class="col-md-2"><button class="btn btn-warning w-100" onclick="addSweets()">Record</button></div>
+                    <div class="col-md-4"><span class="badge bg-info text-dark p-2">Today's Sweets: <strong id="sweetsToday">R0</strong></span></div>
+                </div>
+            </div>
+            <div class="glass-card"><div class="table-wrap"><table class="table"><thead><tr><th>ID</th><th>Date</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead><tbody id="sweetsBody"></tbody></table></div></div>
+        </section>
+
+        <!-- ===== REPORTS ===== -->
+        <section class="page-section" id="page-reports">
+            <h2 class="section-title">Reports</h2>
+            <p class="section-subtitle">Generate professional business reports</p>
+            <div class="glass-card mb-3">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-3"><label class="form-label">Date Range</label><select class="form-select" id="reportRange"><option value="today">Today</option><option value="yesterday">Yesterday</option><option value="week">Last 7 Days</option><option value="month">This Month</option><option value="quarter">Quarter</option><option value="year">Year</option><option value="fy">Financial Year</option><option value="custom">Custom</option></select></div>
+                    <div class="col-md-2"><label class="form-label">From</label><input class="form-control" id="reportFrom" type="date" /></div>
+                    <div class="col-md-2"><label class="form-label">To</label><input class="form-control" id="reportTo" type="date" /></div>
+                    <div class="col-md-2"><button class="btn btn-primary w-100" onclick="generateReport()">Generate</button></div>
+                    <div class="col-md-3 d-flex gap-1 flex-wrap">
+                        <button class="btn btn-sm btn-outline-primary" onclick="exportReportPDF()">PDF</button>
+                        <button class="btn btn-sm btn-outline-success" onclick="exportReportXLSX()">Excel</button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="exportReportCSV()">CSV</button>
+                        <button class="btn btn-sm btn-outline-info" onclick="copyReportWhatsApp()">WhatsApp</button>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-card" id="reportOutput">
+                <div class="p-3 text-center text-muted-light">Select range and click Generate.</div>
+            </div>
+        </section>
+
+        <!-- ===== RECONCILIATION ===== -->
+        <section class="page-section" id="page-reconciliation">
+            <h2 class="section-title">Reconciliation Engine</h2>
+            <p class="section-subtitle">Verify data integrity and financial consistency</p>
+            <div class="row g-3 mb-3">
+                <div class="col-md-12">
+                    <div class="glass-card">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+                            <h6 class="fw-bold mb-0">System Integrity Status</h6>
+                            <button class="btn btn-sm btn-primary" onclick="runFullReconciliation()"><span class="material-symbols-outlined" style="font-size:1.2rem;">refresh</span> Run Reconciliation</button>
+                        </div>
+                        <hr />
+                        <div id="reconciliationResults">
+                            <p class="text-muted-light">Click "Run Reconciliation" to check your data integrity.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="glass-card">
+                        <h6 class="fw-bold">Reconciliation Rules</h6>
+                        <ul class="small text-muted-light">
+                            <li>✅ Sales + Other Income = Total Revenue</li>
+                            <li>✅ POS sales create one canonical sale record</li>
+                            <li>✅ Income module excludes POS revenue</li>
+                            <li>✅ Inventory movements reconcile with stock</li>
+                            <li>✅ No duplicate transaction IDs</li>
+                            <li>✅ All transactions have valid dates</li>
+                            <li>✅ No orphan records</li>
+                            <li>✅ No negative stock (unless allowed)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="glass-card">
+                        <h6 class="fw-bold">Quick Reconcile</h6>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-sm btn-outline-primary" onclick="reconcileSales()">Sales</button>
+                            <button class="btn btn-sm btn-outline-success" onclick="reconcileRevenue()">Revenue</button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="reconcileInventory()">Inventory</button>
+                            <button class="btn btn-sm btn-outline-info" onclick="reconcileDuplicates()">Duplicates</button>
+                        </div>
+                        <div id="quickReconcileResult" class="mt-2 small"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== AI ASSISTANT ===== -->
+        <section class="page-section" id="page-ai">
+            <h2 class="section-title">AI Business Assistant</h2>
+            <p class="section-subtitle">Ask anything about your business</p>
+            <div class="glass-card mb-3">
+                <div class="row g-2">
+                    <div class="col-md-9"><input class="form-control" id="aiQuery" placeholder="e.g. How much profit this month? Which perfume sells most?" /></div>
+                    <div class="col-md-3"><button class="btn btn-primary w-100" onclick="askAI()"><span class="material-symbols-outlined" style="font-size:1.2rem;">send</span> Ask</button></div>
+                </div>
+                <div class="mt-2 d-flex gap-1 flex-wrap">
+                    <button class="btn btn-sm btn-outline-secondary" onclick="setAIQuery('How much profit did I make this month?')">Profit</button>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="setAIQuery('Which perfume sells the most?')">Top Perfume</button>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="setAIQuery('How many CVs did I create this year?')">CVs</button>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="setAIQuery('Predict next month revenue')">Forecast</button>
+                </div>
+            </div>
+            <div class="glass-card">
+                <div class="ai-chat" id="aiChat"><div class="text-center text-muted-light py-3">Ask me anything about your business data.</div></div>
+            </div>
+        </section>
+
+        <!-- ===== BACKUP ===== -->
+        <section class="page-section" id="page-backup">
+            <h2 class="section-title">Backup & Restore</h2>
+            <p class="section-subtitle">Enterprise-grade backup system</p>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="glass-card">
+                        <h6 class="fw-bold">Manual Backup</h6>
+                        <p class="text-muted-light small">Download a complete backup of all business data.</p>
+                        <button class="btn btn-primary" onclick="createBackup()"><span class="material-symbols-outlined" style="font-size:1.2rem;">download</span> Download Backup</button>
+                        <hr />
+                        <h6 class="fw-bold mt-2">Restore</h6>
+                        <input class="form-control mb-2" type="file" id="restoreFile" accept=".json" />
+                        <button class="btn btn-warning" onclick="restoreBackup()"><span class="material-symbols-outlined" style="font-size:1.2rem;">upload</span> Restore Backup</button>
+                        <div class="mt-2 small text-muted-light">⚠️ Restore will overwrite all current data.</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="glass-card">
+                        <h6 class="fw-bold">Backup History</h6>
+                        <div id="backupHistory"><p class="text-muted-light small">No backups yet.</p></div>
+                        <hr />
+                        <h6 class="fw-bold">Backup Settings</h6>
+                        <div class="row g-1">
+                            <div class="col-6">
+                                <select class="form-select form-select-sm" id="backupRetention">
+                                    <option value="7">7 days</option>
+                                    <option value="14" selected>14 days</option>
+                                    <option value="30">30 days</option>
+                                    <option value="90">90 days</option>
+                                    <option value="180">6 months</option>
+                                    <option value="365">1 year</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <select class="form-select form-select-sm" id="backupFrequency">
+                                    <option value="manual">Manual</option>
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly" selected>Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary mt-2" onclick="applyBackupSettings()">Apply Settings</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SETTINGS ===== -->
+        <section class="page-section" id="page-settings">
+            <h2 class="section-title">Settings</h2>
+            <p class="section-subtitle">Configure your business preferences</p>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="glass-card">
+                        <h6 class="fw-bold">Business Info</h6>
+                        <div class="mb-2"><label class="form-label">Business Name</label><input class="form-control" id="settingsBizName" value="SISONKE HUB" /></div>
+                        <div class="mb-2"><label class="form-label">Trading Name</label><input class="form-control" id="settingsTradingName" value="SISONKE HUB" /></div>
+                        <div class="mb-2"><label class="form-label">Address</label><input class="form-control" id="settingsAddress" placeholder="Business address" /></div>
+                        <div class="mb-2"><label class="form-label">Phone</label><input class="form-control" id="settingsPhone" placeholder="Phone number" /></div>
+                        <div class="mb-2"><label class="form-label">Email</label><input class="form-control" id="settingsEmail" placeholder="Email" /></div>
+                        <div class="mb-2"><label class="form-label">Currency</label><input class="form-control" id="settingsCurrency" value="R" /></div>
+                        <div class="mb-2"><label class="form-label">Country</label><input class="form-control" id="settingsCountry" value="South Africa" /></div>
+                        <div class="mb-2"><label class="form-label">Time Zone</label><input class="form-control" id="settingsTimezone" value="Africa/Johannesburg" /></div>
+                        <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="glass-card">
+                        <h6 class="fw-bold">System Preferences</h6>
+                        <div class="mb-2"><label class="form-label">Theme</label>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-secondary" onclick="setTheme('light')">Light</button>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="setTheme('dark')">Dark</button>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="setTheme('auto')">Auto</button>
+                            </div>
+                        </div>
+                        <div class="mb-2"><label class="form-label">Date Format</label>
+                            <select class="form-select" id="settingsDateFormat"><option value="YYYY-MM-DD">YYYY-MM-DD</option><option value="DD/MM/YYYY">DD/MM/YYYY</option><option value="MM/DD/YYYY">MM/DD/YYYY</option></select>
+                        </div>
+                        <div class="mb-2"><label class="form-label">VAT Enabled</label>
+                            <select class="form-select" id="settingsVat"><option value="false">No</option><option value="true">Yes</option></select>
+                        </div>
+                        <div class="mb-2"><label class="form-label">VAT Percentage</label><input class="form-control" id="settingsVatRate" type="number" step="0.01" value="15" /></div>
+                        <div class="mb-2"><label class="form-label">Low Stock Threshold</label><input class="form-control" id="settingsLowStock" type="number" value="5" /></div>
+                        <div class="mb-2"><label class="form-label">Allow Negative Stock</label>
+                            <select class="form-select" id="settingsNegStock"><option value="false">No</option><option value="true">Yes</option></select>
+                        </div>
+                        <hr />
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-danger" onclick="lockSession()">🔒 Lock Session</button>
+                            <button class="btn btn-outline-danger" onclick="clearAllData()" style="color:#c62828;">🗑️ Reset All Data</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ===== MODALS for Income/Expense (kept for convenience) ===== -->
+    <!-- Income Modal -->
+    <div class="modal fade" id="incomeModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-card">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title">Record Other Income</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Source</label>
+                        <input class="form-control" id="posIncomeSource" placeholder="e.g. Rental, Interest" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Amount</label>
+                        <input class="form-control" id="posIncomeAmount" type="number" step="0.01" placeholder="0.00" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date</label>
+                        <input class="form-control" id="posIncomeDate" type="date" />
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success" onclick="addPOSIncome()">Add Income</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expense Modal -->
+    <div class="modal fade" id="expenseModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-card">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title">Record Expense</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <input class="form-control" id="posExpenseCategory" placeholder="e.g. Rent, Utilities" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Amount</label>
+                        <input class="form-control" id="posExpenseAmount" type="number" step="0.01" placeholder="0.00" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date</label>
+                        <input class="form-control" id="posExpenseDate" type="date" />
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-danger" onclick="addPOSExpense()">Add Expense</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div class="toast-container-custom" id="toastContainer"></div>
+
+    <!-- Bootstrap JS for modals -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+    <script>
+        // =========================================================================
+        // SISONKE HUB — Enterprise Financial Management System v2.0
+        // UNIFIED FINANCIAL WORKSPACE — all financial activities in POS
+        // =========================================================================
+
+        (function() {
+            'use strict';
+
+            // --- Day.js plugins ---
+            dayjs.extend(dayjs_plugin_relativeTime);
+            dayjs.extend(dayjs_plugin_utc);
+
+            // --- DB Setup (Dexie) with enhanced schema ---
+            const db = new Dexie('SisonkeHubDB');
+            db.version(2).stores({
+                sales: '++id, transactionId, item, date, total, status, source',
+                income: '++id, transactionId, source, amount, date, status, source',
+                expenses: '++id, transactionId, category, amount, date, status, source',
+                customers: '++id, name, phone, email, created',
+                inventory: '++id, name, qty, cost, supplier, created',
+                suppliers: '++id, name, contact, phone, created',
+                perfumes: '++id, name, sellPrice, costPrice, qty, supplier, notes, created',
+                cvlocal: '++id, transactionId, type, qty, total, date, status, source',
+                cvonline: '++id, transactionId, type, qty, total, date, status, source',
+                sweets: '++id, transactionId, amount, date, status, source',
+                backups: '++id, timestamp, size, filename, version, recordCounts',
+                settings: '++id, key, value',
+                audit: '++id, action, timestamp, details, user',
+                inventoryMovements: '++id, productId, productName, type, qty, beforeQty, afterQty, date, reference, note'
+            }).upgrade(async tx => {
+                const tables = ['sales', 'income', 'expenses', 'cvlocal', 'cvonline', 'sweets'];
+                for (const table of tables) {
+                    const records = await tx.table(table).toArray();
+                    for (const rec of records) {
+                        const updates = {};
+                        if (!rec.status) updates.status = 'Completed';
+                        if (!rec.transactionId) {
+                            const prefix = table === 'sales' ? 'SALE' :
+                                table === 'income' ? 'INC' :
+                                table === 'expenses' ? 'EXP' :
+                                table === 'cvlocal' ? 'CVL' :
+                                table === 'cvonline' ? 'CVO' : 'SWT';
+                            const date = rec.date || dayjs().format('YYYY-MM-DD');
+                            const id = String(rec.id || '').padStart(4, '0');
+                            updates.transactionId = `${prefix}-${date.replace(/-/g,'')}-${id.slice(-4)}`;
+                        }
+                        if (!rec.source) updates.source = table === 'income' ? 'Other Income' : table === 'expenses' ?
+                            'Expense' : table === 'sales' ? 'POS' : 'Service';
+                        if (Object.keys(updates).length) await tx.table(table).update(rec.id, updates);
+                    }
+                }
+            });
+
+            // --- State ---
+            let currentTheme = localStorage.getItem('sh-theme') || 'auto';
+            let currentPage = 'dashboard';
+            let chartRevenue = null;
+            let chartPie = null;
+            let posCart = [];
+            let posProducts = [];
+            let isProcessing = false;
+
+            // --- Helpers ---
+            function uid() { return Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6); }
+
+            function today() { return dayjs().format('YYYY-MM-DD'); }
+
+            function generateTransactionId(prefix, date, counter) {
+                const d = date || today();
+                const c = String(counter || 0).padStart(4, '0');
+                return `${prefix}-${d.replace(/-/g,'')}-${c}`;
+            }
+
+            function formatCurrency(amount) {
+                const cur = document.getElementById('settingsCurrency')?.value || 'R';
+                return cur + Number(amount || 0).toFixed(2);
+            }
+
+            function toast(msg, icon = '✅', bg = '') {
+                const c = document.getElementById('toastContainer');
+                const el = document.createElement('div');
+                el.className = 'toast-custom ' + bg;
+                el.innerHTML = `<span class="icon">${icon}</span><span class="msg">${msg}</span>`;
+                c.appendChild(el);
+                setTimeout(() => { el.style.opacity = '0';
+                    el.style.transform = 'scale(0.9)';
+                    setTimeout(() => el.remove(), 300); }, 4000);
+            }
+
+            function logAudit(action, details, user = 'system') {
+                db.audit.add({ action, timestamp: new Date().toISOString(), details: JSON.stringify(details), user })
+                .catch(() => {});
+            }
+
+            function getStatusBadge(status) {
+                const map = {
+                    'Completed': 'completed',
+                    'Pending': 'pending',
+                    'Cancelled': 'cancelled',
+                    'Voided': 'voided',
+                    'Refunded': 'refunded',
+                    'Archived': 'archived'
+                };
+                const cls = map[status] || 'completed';
+                return `<span class="status-badge ${cls}">${status || 'Completed'}</span>`;
+            }
+
+            // --- Theme ---
+            function applyTheme(theme) {
+                if (theme === 'auto') {
+                    const prefers = window.matchMedia('(prefers-color-scheme: dark)');
+                    document.documentElement.setAttribute('data-theme', prefers.matches ? 'dark' : 'light');
+                    document.getElementById('themeLabel').textContent = prefers.matches ? 'Dark Mode' : 'Light Mode';
+                    document.querySelector('#themeToggle .material-symbols-outlined').textContent = prefers.matches ?
+                        'dark_mode' : 'light_mode';
+                } else {
+                    document.documentElement.setAttribute('data-theme', theme);
+                    document.getElementById('themeLabel').textContent = theme === 'dark' ? 'Dark Mode' : 'Light Mode';
+                    document.querySelector('#themeToggle .material-symbols-outlined').textContent = theme === 'dark' ?
+                        'dark_mode' : 'light_mode';
+                }
+                localStorage.setItem('sh-theme', theme);
+                currentTheme = theme;
+            }
+            window.setTheme = function(theme) { applyTheme(theme); };
+
+            // --- Navigation ---
+            function navigate(page) {
+                document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+                const target = document.getElementById('page-' + page);
+                if (target) target.classList.add('active');
+                document.querySelectorAll('.nav-list a').forEach(el => el.classList.remove('active'));
+                const navLink = document.querySelector(`.nav-list a[data-page="${page}"]`);
+                if (navLink) navLink.classList.add('active');
+                currentPage = page;
+                if (window.innerWidth <= 768) {
+                    document.getElementById('appSidebar').classList.remove('open');
+                }
+                if (page === 'dashboard') refreshDashboard();
+                if (page === 'reports') generateReport();
+                if (page === 'reconciliation') runFullReconciliation();
+                if (page === 'pos') { loadPOSProducts();
+                    loadCustomerDropdown();
+                    updatePOSReconciliation();
+                    renderLedger(); }
+                renderAll();
+            }
+
+            // --- CRUD Renderers (only needed for non-financial modules now) ---
+            // Sales, Income, Expenses pages are removed, but we keep data in DB and render ledgers.
+            // We'll keep render functions for other modules.
+            async function renderCustomers() {
+                const data = await db.customers.orderBy('name').toArray();
+                document.getElementById('customerBody').innerHTML = data.map(s =>
+                    `<tr><td>${s.name||''}</td><td>${s.phone||''}</td><td>${s.email||''}</td><td><button class="btn btn-sm btn-outline-danger" onclick="deleteCustomer(${s.id})">✕</button></td></tr>`
+                ).join('');
+            }
+            window.deleteCustomer = async function(id) {
+                if (!confirm('Delete?')) return;
+                await db.customers.delete(id);
+                renderCustomers();
+                loadCustomerDropdown();
+                refreshDashboard();
+                updatePOSReconciliation();
+            };
+
+            async function renderInventory() {
+                const data = await db.inventory.orderBy('name').toArray();
+                document.getElementById('inventoryBody').innerHTML = data.map(s =>
+                    `<tr><td>${s.name||''}</td><td>${s.qty||0}</td><td>${formatCurrency(s.cost||0)}</td><td>${s.supplier||''}</td><td><button class="btn btn-sm btn-outline-danger" onclick="deleteInventory(${s.id})">✕</button></td></tr>`
+                ).join('');
+            }
+            window.deleteInventory = async function(id) {
+                if (!confirm('Delete?')) return;
+                await db.inventory.delete(id);
+                renderInventory();
+                loadPOSProducts();
+                updatePOSReconciliation();
+                logAudit('inventory_delete', { id });
+            };
+
+            async function renderSuppliers() {
+                const data = await db.suppliers.orderBy('name').toArray();
+                document.getElementById('supplierBody').innerHTML = data.map(s =>
+                    `<tr><td>${s.name||''}</td><td>${s.contact||''}</td><td>${s.phone||''}</td><td><button class="btn btn-sm btn-outline-danger" onclick="deleteSupplier(${s.id})">✕</button></td></tr>`
+                ).join('');
+            }
+            window.deleteSupplier = async function(id) {
+                if (!confirm('Delete?')) return;
+                await db.suppliers.delete(id);
+                renderSuppliers();
+            };
+
+            async function renderPerfumes() {
+                const data = await db.perfumes.orderBy('name').toArray();
+                document.getElementById('perfumeBody').innerHTML = data.map(s => {
+                    const profit = (s.sellPrice || 0) - (s.costPrice || 0);
+                    const margin = s.sellPrice ? ((profit / s.sellPrice) * 100).toFixed(1) : 0;
+                    return `<tr><td>${s.name||''}</td><td>${formatCurrency(s.sellPrice||0)}</td><td>${formatCurrency(s.costPrice||0)}</td><td>${formatCurrency(profit)}</td><td>${margin}%</td><td>${s.qty||0}</td><td>${s.supplier||''}</td><td><button class="btn btn-sm btn-outline-danger" onclick="deletePerfume(${s.id})">✕</button></td></tr>`;
+                }).join('');
+            }
+            window.deletePerfume = async function(id) {
+                if (!confirm('Delete?')) return;
+                await db.perfumes.delete(id);
+                renderPerfumes();
+                loadPOSProducts();
+                updatePOSReconciliation();
+                logAudit('perfume_delete', { id });
+            };
+
+            async function renderCVLocal() {
+                const data = await db.cvlocal.orderBy('date').reverse().toArray();
+                document.getElementById('cvLocalBody').innerHTML = data.map(s =>
+                    `<tr>
+                        <td><span class="badge bg-secondary">${s.transactionId || 'CVL-'+s.id}</span></td>
+                        <td>${s.type||''}</td>
+                        <td>${s.qty||0}</td>
+                        <td>${formatCurrency(s.total||0)}</td>
+                        <td>${s.date||''}</td>
+                        <td>${getStatusBadge(s.status)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteCVLocal(${s.id})">✕</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="voidCVLocal(${s.id})">↺</button>
+                        </td>
+                    </tr>`
+                ).join('');
+            }
+            window.deleteCVLocal = async function(id) {
+                if (!confirm('Delete?')) return;
+                await db.cvlocal.delete(id);
+                renderCVLocal();
+                refreshDashboard();
+                updatePOSReconciliation();
+                renderLedger();
+                logAudit('cvlocal_delete', { id });
+            };
+            window.voidCVLocal = async function(id) {
+                if (!confirm('Void this CV record?')) return;
+                await db.cvlocal.update(id, { status: 'Voided' });
+                renderCVLocal();
+                refreshDashboard();
+                updatePOSReconciliation();
+                renderLedger();
+                logAudit('cvlocal_void', { id });
+            };
+
+            async function renderCVOnline() {
+                const data = await db.cvonline.orderBy('date').reverse().toArray();
+                document.getElementById('cvOnlineBody').innerHTML = data.map(s =>
+                    `<tr>
+                        <td><span class="badge bg-secondary">${s.transactionId || 'CVO-'+s.id}</span></td>
+                        <td>${s.type||''}</td>
+                        <td>${s.qty||0}</td>
+                        <td>${formatCurrency(s.total||0)}</td>
+                        <td>${s.date||''}</td>
+                        <td>${getStatusBadge(s.status)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteCVOnline(${s.id})">✕</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="voidCVOnline(${s.id})">↺</button>
+                        </td>
+                    </tr>`
+                ).join('');
+            }
+            window.deleteCVOnline = async function(id) {
+                if (!confirm('Delete?')) return;
+                await db.cvonline.delete(id);
+                renderCVOnline();
+                refreshDashboard();
+                updatePOSReconciliation();
+                renderLedger();
+                logAudit('cvonline_delete', { id });
+            };
+            window.voidCVOnline = async function(id) {
+                if (!confirm('Void this CV record?')) return;
+                await db.cvonline.update(id, { status: 'Voided' });
+                renderCVOnline();
+                refreshDashboard();
+                updatePOSReconciliation();
+                renderLedger();
+                logAudit('cvonline_void', { id });
+            };
+
+            async function renderSweets() {
+                const data = await db.sweets.orderBy('date').reverse().toArray();
+                document.getElementById('sweetsBody').innerHTML = data.map(s =>
+                    `<tr>
+                        <td><span class="badge bg-secondary">${s.transactionId || 'SWT-'+s.id}</span></td>
+                        <td>${s.date||''}</td>
+                        <td>${formatCurrency(s.amount||0)}</td>
+                        <td>${getStatusBadge(s.status)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteSweets(${s.id})">✕</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="voidSweets(${s.id})">↺</button>
+                        </td>
+                    </tr>`
+                ).join('');
+                const todayAmt = data.filter(d => d.date === today() && d.status !== 'Voided').reduce((sum, d) => sum + (d
+                    .amount || 0), 0);
+                document.getElementById('sweetsToday').textContent = formatCurrency(todayAmt);
+            }
+            window.deleteSweets = async function(id) {
+                if (!confirm('Delete?')) return;
+                await db.sweets.delete(id);
+                renderSweets();
+                refreshDashboard();
+                updatePOSReconciliation();
+                renderLedger();
+                logAudit('sweets_delete', { id });
+            };
+            window.voidSweets = async function(id) {
+                if (!confirm('Void this sweets entry?')) return;
+                await db.sweets.update(id, { status: 'Voided' });
+                renderSweets();
+                refreshDashboard();
+                updatePOSReconciliation();
+                renderLedger();
+                logAudit('sweets_void', { id });
+            };
+
+            async function renderBackupHistory() {
+                const data = await db.backups.orderBy('timestamp').reverse().toArray();
+                const container = document.getElementById('backupHistory');
+                if (!data.length) {
+                    container.innerHTML = '<p class="text-muted-light small">No backups yet.</p>';
+                    return;
+                }
+                container.innerHTML = data.map(b =>
+                    `<div class="backup-item">
+                        <span>📁 ${b.filename||'backup'}</span>
+                        <span class="text-muted-light small">${dayjs(b.timestamp).format('YYYY-MM-DD HH:mm')} (${b.size||0}KB) • v${b.version||'1.0'}</span>
+                        <span class="text-muted-light small">${b.recordCounts ? Object.values(b.recordCounts).reduce((a,b)=>a+b,0)+' records' : ''}</span>
+                    </div>`
+                ).join('');
+            }
+
+            function renderAll() {
+                Promise.all([
+                    renderCustomers(), renderInventory(), renderSuppliers(), renderPerfumes(),
+                    renderCVLocal(), renderCVOnline(), renderSweets(), renderBackupHistory()
+                ]).catch(console.warn);
+            }
+
+            // --- Inventory Movement Ledger ---
+            async function logInventoryMovement(productId, productName, type, qty, beforeQty, afterQty, ref = '') {
+                await db.inventoryMovements.add({
+                    productId,
+                    productName,
+                    type,
+                    qty,
+                    beforeQty,
+                    afterQty,
+                    date: today(),
+                    reference: ref,
+                    note: `${type} - ${productName} changed from ${beforeQty} to ${afterQty}`
+                });
+            }
+
+            // --- Combined Ledger (now the primary view) ---
+            async function renderLedger() {
+                const todayStr = today();
+                const sales = await db.sales.where('date').equals(todayStr).toArray();
+                const income = await db.income.where('date').equals(todayStr).toArray();
+                const expenses = await db.expenses.where('date').equals(todayStr).toArray();
+                const cvl = await db.cvlocal.where('date').equals(todayStr).toArray();
+                const cvo = await db.cvonline.where('date').equals(todayStr).toArray();
+                const sweets = await db.sweets.where('date').equals(todayStr).toArray();
+
+                const entries = [];
+
+                sales.forEach(s => {
+                    if (s.status === 'Voided' || s.status === 'Cancelled') return;
+                    entries.push({
+                        id: s.id,
+                        type: 'sales',
+                        typeLabel: 'Sales',
+                        description: s.item || 'Sale',
+                        amount: s.total || 0,
+                        status: s.status || 'Completed',
+                        source: 'sales',
+                        raw: s
+                    });
+                });
+                income.forEach(s => {
+                    if (s.status === 'Voided' || s.status === 'Cancelled') return;
+                    entries.push({
+                        id: s.id,
+                        type: 'income',
+                        typeLabel: 'Income',
+                        description: s.source || 'Other Income',
+                        amount: s.amount || 0,
+                        status: s.status || 'Completed',
+                        source: 'income',
+                        raw: s
+                    });
+                });
+                expenses.forEach(s => {
+                    if (s.status === 'Voided' || s.status === 'Cancelled') return;
+                    entries.push({
+                        id: s.id,
+                        type: 'expense',
+                        typeLabel: 'Expense',
+                        description: s.category || 'Expense',
+                        amount: -(s.amount || 0),
+                        status: s.status || 'Completed',
+                        source: 'expenses',
+                        raw: s
+                    });
+                });
+                cvl.forEach(s => {
+                    if (s.status === 'Voided' || s.status === 'Cancelled') return;
+                    entries.push({
+                        id: s.id,
+                        type: 'cv',
+                        typeLabel: 'CV Local',
+                        description: s.type || 'CV',
+                        amount: s.total || 0,
+                        status: s.status || 'Completed',
+                        source: 'cvlocal',
+                        raw: s
+                    });
+                });
+                cvo.forEach(s => {
+                    if (s.status === 'Voided' || s.status === 'Cancelled') return;
+                    entries.push({
+                        id: s.id,
+                        type: 'cv',
+                        typeLabel: 'CV Online',
+                        description: s.type || 'CV Online',
+                        amount: s.total || 0,
+                        status: s.status || 'Completed',
+                        source: 'cvonline',
+                        raw: s
+                    });
+                });
+                sweets.forEach(s => {
+                    if (s.status === 'Voided' || s.status === 'Cancelled') return;
+                    entries.push({
+                        id: s.id,
+                        type: 'sweets',
+                        typeLabel: 'Sweets',
+                        description: 'Daily Sweets',
+                        amount: s.amount || 0,
+                        status: s.status || 'Completed',
+                        source: 'sweets',
+                        raw: s
+                    });
+                });
+
+                entries.sort((a, b) => b.id - a.id);
+
+                const tbody = document.getElementById('ledgerBody');
+                if (!entries.length) {
+                    tbody.innerHTML =
+                    '<tr><td colspan="5" class="text-muted-light text-center">No transactions today.</td></tr>';
+                    document.getElementById('ledgerCount').textContent = '0 entries';
+                    return;
+                }
+                tbody.innerHTML = entries.map(e => {
+                    const typeClass = e.type === 'sales' ? 'sales' : e.type === 'income' ? 'income' : e.type ===
+                        'expense' ? 'expense' : 'cv';
+                    return `<tr>
+                        <td><span class="type-badge ${typeClass}">${e.typeLabel}</span></td>
+                        <td>${e.description}</td>
+                        <td>${formatCurrency(e.amount)}</td>
+                        <td>${getStatusBadge(e.status)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteLedgerEntry('${e.source}', ${e.id})">✕</button>
+                        </td>
+                    </tr>`;
+                }).join('');
+                document.getElementById('ledgerCount').textContent = entries.length + ' entries';
+            }
+            window.deleteLedgerEntry = function(source, id) {
+                if (!confirm('Delete this entry?')) return;
+                if (source === 'sales') deleteSale(id);
+                else if (source === 'income') deleteIncome(id);
+                else if (source === 'expenses') deleteExpense(id);
+                else if (source === 'cvlocal') deleteCVLocal(id);
+                else if (source === 'cvonline') deleteCVOnline(id);
+                else if (source === 'sweets') deleteSweets(id);
+            };
+
+            // --- POS Reconciliation Summary ---
+            async function updatePOSReconciliation() {
+                try {
+                    const todayStr = today();
+                    const sales = await db.sales.where('date').equals(todayStr).toArray();
+                    const income = await db.income.where('date').equals(todayStr).toArray();
+                    const expenses = await db.expenses.where('date').equals(todayStr).toArray();
+                    const cvl = await db.cvlocal.where('date').equals(todayStr).toArray();
+                    const cvo = await db.cvonline.where('date').equals(todayStr).toArray();
+                    const sweets = await db.sweets.where('date').equals(todayStr).toArray();
+
+                    const activeStatus = ['Completed', 'Pending'];
+                    const salesTotal = sales.filter(s => activeStatus.includes(s.status)).reduce((sum, s) => sum + (s.total || 0),
+                        0);
+                    const incomeTotal = income.filter(s => activeStatus.includes(s.status)).reduce((sum, s) => sum + (s
+                        .amount || 0), 0);
+                    const expensesTotal = expenses.filter(s => activeStatus.includes(s.status)).reduce((sum, s) => sum + (s
+                        .amount || 0), 0);
+                    const cvlTotal = cvl.filter(s => activeStatus.includes(s.status)).reduce((sum, s) => sum + (s.total || 0),
+                        0);
+                    const cvoTotal = cvo.filter(s => activeStatus.includes(s.status)).reduce((sum, s) => sum + (s.total || 0),
+                        0);
+                    const sweetsTotal = sweets.filter(s => activeStatus.includes(s.status)).reduce((sum, s) => sum + (s
+                        .amount || 0), 0);
+
+                    const totalRevenue = salesTotal + incomeTotal + cvlTotal + cvoTotal + sweetsTotal;
+                    const totalExpenses = expensesTotal;
+                    const netProfit = totalRevenue - totalExpenses;
+
+                    document.getElementById('posReconSales').textContent = formatCurrency(salesTotal + cvlTotal + cvoTotal +
+                        sweetsTotal);
+                    document.getElementById('posReconIncome').textContent = formatCurrency(incomeTotal);
+                    document.getElementById('posReconExpenses').textContent = formatCurrency(expensesTotal);
+                    document.getElementById('posReconProfit').textContent = formatCurrency(netProfit);
+
+                    const allCompleted = [...sales, ...income, ...expenses, ...cvl, ...cvo, ...sweets].every(r => r.status ===
+                        'Completed' || r.status === 'Voided' || r.status === 'Cancelled');
+                    const hasPending = [...sales, ...income, ...expenses, ...cvl, ...cvo, ...sweets].some(r => r.status ===
+                        'Pending');
+                    const hasVoided = [...sales, ...income, ...expenses, ...cvl, ...cvo, ...sweets].some(r => r.status ===
+                        'Voided' || r.status === 'Cancelled');
+
+                    let statusHtml = '';
+                    let statusText = '';
+                    if (allCompleted && !hasPending && !hasVoided) {
+                        statusHtml = '<span class="recon-ok">✅ Reconciled</span>';
+                        statusText = 'All transactions completed and reconciled.';
+                    } else if (hasPending) {
+                        statusHtml = '<span class="recon-warn">⚠️ Pending</span>';
+                        statusText = 'Some transactions are pending. Complete or void them.';
+                    } else if (hasVoided) {
+                        statusHtml = '<span class="recon-warn">⚠️ Voided/Cancelled</span>';
+                        statusText = 'Some transactions are voided or cancelled. Excluded from totals.';
+                    } else {
+                        statusHtml = '<span class="recon-ok">✅ Reconciled</span>';
+                        statusText = 'All transactions reconciled.';
+                    }
+                    document.getElementById('posReconStatus').innerHTML = statusHtml;
+                    document.getElementById('posReconDetails').textContent = statusText;
+                } catch (e) { console.warn('POS Recon update error:', e); }
+            }
+            window.updatePOSReconciliation = updatePOSReconciliation;
+
+            // --- Quick Entry Functions (inline) ---
+            window.quickAddSale = async function() {
+                const name = document.getElementById('quickSaleName').value.trim();
+                const qty = parseInt(document.getElementById('quickSaleQty').value) || 1;
+                const price = parseFloat(document.getElementById('quickSalePrice').value) || 0;
+                if (!name || price <= 0) { toast('Enter item name and price', '⚠️'); return; }
+                const date = today();
+                const count = await db.sales.count();
+                const txId = generateTransactionId('SALE', date, count + 1);
+                await db.sales.add({
+                    transactionId: txId,
+                    item: name,
+                    qty,
+                    price,
+                    total: qty * price,
+                    date,
+                    status: 'Completed',
+                    source: 'Manual Sale',
+                    created: new Date().toISOString()
+                });
+                document.getElementById('quickSaleName').value = '';
+                document.getElementById('quickSaleQty').value = '1';
+                document.getElementById('quickSalePrice').value = '';
+                toast(`Sale added: ${txId}`, '✅');
+                refreshDashboard();
+                updatePOSReconciliation();
+                renderLedger();
+                logAudit('quick_sale_add', { txId, name, qty, price });
+            };
+
+            window.quickAddIncome = async function() {
+                const source = document.getElementById('quickIncomeSource').value.trim();
+                const amount = parseFloat(document.getElementById('quickIncomeAmount').value);
+                if (!source || !amount) { toast('Enter source and amount', '⚠️'); return; }
+                const date = today();
+                const count = await db.income.count();
+                const txId = generateTransactionId('INC', date, count + 1);
+                await db.income.add({
+                    transactionId: txId,
+                    source,
+                    amount,
+                    date,
+                    status: 'Completed',
+                    source: 'Other Income',
+                    created: new Date().toISOString()
+                });
+                document.getElementById('quickIncomeSource').value = '';
+                document.getElementById('quickIncomeAmount').value = '';
+                toast(`Income added: ${txId}`, '✅');
+                refreshDashboard();
+                updatePOSReconciliation();
+                renderLedger();
+                logAudit('quick_income_add', { txId, source, amount });
+            };
+
+            window.quickAddExpense = async function() {
+                const category = document.getElementById('quickExpenseCategory').value.trim();
+                const amount = parseFloat(document.getElementById('quickExpenseAmount').value);
+                if (!category || !amount) { toast('Enter category and amount', '⚠️'); return; }
+                const date = today();
+                const count = await db.expenses.count();
+                const txId = generateTransactionId('EXP', date, count + 1);
+                await db.expenses.add({
+                    transactionId: txId,
+                    category,
+                    amount,
+                    date,
+                    status: 'Completed',
+                    source: 'Expense',
+                    created: new Date().toISOString()
+                });
+                document.getElementById('quickExpenseCategory').value = '';
+                document.getElementById('quickExpenseAmount').value = '';
+                toast(`Expense added: ${txId}`, '✅');
+                refreshDashboard();
+                updatePOSReconciliation();
+                renderLedger();
+                logAudit('quick_expense_add', { txId, category, amount });
+            };
+
+            window.quickAddRefund = async function() {
+                const desc = document.getElementById('quickRefundDesc').value.trim();
+                const amount = parseFloat(document.getElementById('quickRefundAmount').value);
+                if (!desc || !amount) { toast('Enter description and amount', '⚠️'); return; }
+                const date = today();
+                const count = await db.sales.count();
+                const txId = generateTransactionId('REF', date, count + 1);
+                await db.sales.add({
+                    transactionId: txId,
+                    item: 'Refund: ' + desc,
+                    qty: 1,
+                    price: -amount,
+                    total: -amount,
+                    date,
+                    status: 'Refunded',
+                    source: 'Refund',
+                    created: new Date().toISOString()
+                });
+                document.getElementById('quickRefundDesc').value = '';
+                document.getElementById('quickRefundAmount').value = '';
+                toast(`Refund recorded: ${txId}`, '↩️');
+                refreshDashboard();
+                updatePOSReconciliation();
+                renderLedger();
+                logAudit('quick_refund_add', { txId, desc, amount });
+            };
+
+            // --- POS Income/Expense via Modals (kept for convenience) ---
+            window.addPOSIncome = async function() {
+                const source = document.getElementById('posIncomeSource').value.trim();
+                const amount = parseFloat(document.getElementById('posIncomeAmount').value);
+                const date = document.getElementById('posIncomeDate').value || today();
+                if (!source || !amount) { toast('Enter source and amount', '⚠️'); return; }
+                const count = await db.income.count();
+                const txId = generateTransactionId('INC', date, count + 1);
+                await db.income.add({
+                    transactionId: txId,
+                    source,
+                    amount,
+                    date,
+                    status: 'Completed',
+                    source: 'Other Income',
+                    created: new Date().toISOString()
+                });
+                document.getElementById('posIncomeSource').value = '';
+                document.getElementById('posIncomeAmount').value = '';
+                toast(`Income added: ${txId}`, '✅');
+                const modal = bootstrap.Modal.getInstance(document.getElementById('incomeModal'));
+                if (modal) modal.hide();
+                refreshDashboard();
+                updatePOSReconciliation();
+                renderLedger();
+                logAudit('pos_income_add', { txId, source, amount });
+            };
+
+            window.addPOSExpense = async function() {
+                const category = document.getElementById('posExpenseCategory').value.trim();
+                const amount = parseFloat(document.getElementById('posExpenseAmount').value);
+                const date = document.getElementById('posExpenseDate').value || today();
+                if (!category || !amount) { toast('Enter category and amount', '⚠️'); return; }
+                const count = await db.expenses.count();
+                const txId = generateTransactionId('EXP', date, count + 1);
+                await db.expenses.add({
+                    transactionId: txId,
+                    category,
+                    amount,
+                    date,
+                    status: 'Completed',
+                    source: 'Expense',
+                    created: new Date().toISOString()
+                });
+                document.getElementById('posExpenseCategory').value = '';
+                document.getElementById('posExpenseAmount').value = '';
+                toast(`Expense added: ${txId}`, '✅');
+                const modal = bootstrap.Modal.getInstance(document.getElementById('expenseModal'));
+                if (modal) modal.hide();
+                refreshDashboard();
+                updatePOSReconciliation();
+                renderLedger();
+                logAudit('pos_expense_add', { txId, category, amount });
+            };
+
+            // --- Dashboard ---
+            async function refreshDashboard() {
+                try {
+                    const sales = await db.sales.toArray();
+                    const income = await db.income.toArray();
+                    const expenses = await db.expenses.toArray();
+                    const customers = await db.customers.toArray();
+                    const cvl = await db.cvlocal.toArray();
+                    const cvo = await db.cvonline.toArray();
+                    const sweets = await db.sweets.toArray();
+
+                    const todayStr = today();
+                    const weekAgo = dayjs().subtract(7, 'day').format('YYYY-MM-DD');
+
+                    const allRevenue = [
+                        ...sales.filter(s => s.status !== 'Voided' && s.status !== 'Cancelled').map(s => ({ amount: s
+                                .total || 0, date: s.date || '' })),
+                        ...income.filter(s => s.status !== 'Voided' && s.status !== 'Cancelled').map(s => ({ amount: s
+                                .amount || 0, date: s.date || '' })),
+                        ...cvl.filter(s => s.status !== 'Voided' && s.status !== 'Cancelled').map(s => ({ amount: s
+                                .total || 0, date: s.date || '' })),
+                        ...cvo.filter(s => s.status !== 'Voided' && s.status !== 'Cancelled').map(s => ({ amount: s
+                                .total || 0, date: s.date || '' })),
+                        ...sweets.filter(s => s.status !== 'Voided' && s.status !== 'Cancelled').map(s => ({ amount: s
+                                .amount || 0, date: s.date || '' }))
+                    ];
+
+                    const todayRev = allRevenue.filter(r => r.date === todayStr).reduce((s, r) => s + r.amount, 0);
+                    const weekRev = allRevenue.filter(r => r.date >= weekAgo).reduce((s, r) => s + r.amount, 0);
+                    const monthRev = allRevenue.filter(r => r.date && r.date.startsWith(dayjs().format('YYYY-MM')))
+                        .reduce((s, r) => s + r.amount, 0);
+
+                    const todayExp = expenses.filter(e => e.date === todayStr && e.status !== 'Voided').reduce((s, e) =>
+                        s + (e.amount || 0), 0);
+                    const todayProfit = todayRev - todayExp;
+
+                    document.getElementById('dashRevenue').textContent = formatCurrency(todayRev);
+                    document.getElementById('dashProfit').textContent = formatCurrency(todayProfit);
+                    document.getElementById('dashExpenses').textContent = formatCurrency(todayExp);
+                    document.getElementById('dashCustomers').textContent = customers.length;
+                    document.getElementById('dashWeekly').textContent = formatCurrency(weekRev);
+                    document.getElementById('dashMonthly').textContent = formatCurrency(monthRev);
+
+                    const prevMonth = dayjs().subtract(1, 'month').format('YYYY-MM');
+                    const prevRev = allRevenue.filter(r => r.date && r.date.startsWith(prevMonth)).reduce((s, r) => s +
+                        r.amount, 0);
+                    const growth = prevRev ? ((monthRev - prevRev) / prevRev * 100) : 0;
+                    document.getElementById('dashGrowth').textContent = growth.toFixed(1) + '%';
+
+                    const health = Math.min(100, Math.round(60 + (todayRev / 100) * 0.5 + (customers.length / 10) * 2));
+                    document.getElementById('dashHealth').textContent = Math.min(100, health);
+
+                    const last7 = [];
+                    for (let i = 6; i >= 0; i--) {
+                        const d = dayjs().subtract(i, 'day').format('YYYY-MM-DD');
+                        const rev = allRevenue.filter(r => r.date === d).reduce((s, r) => s + r.amount, 0);
+                        last7.push({ date: dayjs(d).format('DD MMM'), amount: rev });
+                    }
+
+                    if (chartRevenue) { chartRevenue.destroy();
+                        chartRevenue = null; }
+                    const ctx1 = document.getElementById('dashChartRevenue').getContext('2d');
+                    chartRevenue = new Chart(ctx1, {
+                        type: 'line',
+                        data: {
+                            labels: last7.map(d => d.date),
+                            datasets: [{ label: 'Revenue', data: last7.map(d => d.amount), borderColor: '#0d47a1',
+                                backgroundColor: 'rgba(13,71,161,0.08)', fill: true, tension: 0.3,
+                                pointBackgroundColor: '#0d47a1' }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                            scales: { y: { beginAtZero: true } } }
+                    });
+
+                    const srcMap = {};
+                    sales.filter(s => s.status !== 'Voided').forEach(s => { const k = s.item || 'Sales';
+                        srcMap[k] = (srcMap[k] || 0) + (s.total || 0); });
+                    income.filter(s => s.status !== 'Voided').forEach(s => { const k = s.source || 'Income';
+                        srcMap[k] = (srcMap[k] || 0) + (s.amount || 0); });
+                    cvl.filter(s => s.status !== 'Voided').forEach(s => { const k = 'CV Local';
+                        srcMap[k] = (srcMap[k] || 0) + (s.total || 0); });
+                    cvo.filter(s => s.status !== 'Voided').forEach(s => { const k = 'CV Online';
+                        srcMap[k] = (srcMap[k] || 0) + (s.total || 0); });
+                    sweets.filter(s => s.status !== 'Voided').forEach(s => { const k = 'Sweets';
+                        srcMap[k] = (srcMap[k] || 0) + (s.amount || 0); });
+
+                    const labels = Object.keys(srcMap).slice(0, 6);
+                    const values = labels.map(k => srcMap[k]);
+                    const colors = ['#0d47a1', '#2e7d32', '#c62828', '#e65100', '#6a1b9a', '#00838f'];
+                    if (chartPie) { chartPie.destroy();
+                        chartPie = null; }
+                    const ctx2 = document.getElementById('dashChartPie').getContext('2d');
+                    chartPie = new Chart(ctx2, {
+                        type: 'doughnut',
+                        data: { labels, datasets: [{ data: values, backgroundColor: colors.slice(0, labels.length),
+                                borderWidth: 0 }] },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom',
+                                    labels: { boxWidth: 12, font: { size: 11 } } } } }
+                    });
+
+                    logAudit('dashboard_refresh', { revenue: todayRev });
+                } catch (e) { console.warn('Dashboard error:', e); }
+            }
+            window.refreshDashboard = refreshDashboard;
+
+            // --- Delete functions for ledger entries (they update all) ---
+            // These delete functions are used by the ledger delete buttons.
+            // They are global because they were defined with window. earlier.
+            // We'll keep them.
+
+            // --- POS Functions (Checkout) ---
+            const CV_SERVICES = [
+                { id: 'svc_cv', name: 'CV (Word+PDF)', price: 50, type: 'service', refId: null },
+                { id: 'svc_cvcover', name: 'CV + Cover Letter', price: 75, type: 'service', refId: null },
+                { id: 'svc_cvcoverattach', name: 'CV + Cover + Attach', price: 120, type: 'service', refId: null },
+                { id: 'svc_indeedcv', name: 'Indeed Profile + CV', price: 150, type: 'service', refId: null },
+                { id: 'svc_linkedincv', name: 'LinkedIn Profile + CV', price: 150, type: 'service', refId: null },
+                { id: 'svc_indeedlinkedincv', name: 'Indeed + LinkedIn + CV', price: 220, type: 'service', refId: null }
+            ];
+
+            async function loadPOSProducts() {
+                const inventory = await db.inventory.toArray();
+                const perfumes = await db.perfumes.toArray();
+                const services = CV_SERVICES.map(s => ({ ...s, qty: 9999 }));
+                const all = [
+                    ...inventory.map(p => ({ id: 'inv_' + p.id, name: p.name, price: p.cost || 0, qty: p.qty || 0,
+                        type: 'inventory', refId: p.id })),
+                    ...perfumes.map(p => ({ id: 'perf_' + p.id, name: p.name, price: p.sellPrice || 0, qty: p.qty || 0,
+                        type: 'perfume', refId: p.id })),
+                    ...services
+                ];
+                posProducts = all;
+                renderPOSProducts(all);
+                populateProductSelect(all);
+            }
+            window.loadPOSProducts = loadPOSProducts;
+
+            function renderPOSProducts(products) {
+                const grid = document.getElementById('posProductGrid');
+                if (!products.length) {
+                    grid.innerHTML =
+                        '<p class="text-muted-light small">No products available. Add inventory, perfumes, or use CV services.</p>';
+                    return;
+                }
+                grid.innerHTML = products.map(p => {
+                    const isService = p.type === 'service';
+                    return `
+                        <div class="pos-product-card" onclick="addToCart('${p.id}')">
+                            ${isService ? '<span class="service-badge">Service</span>' : ''}
+                            <div class="product-name">${p.name}</div>
+                            <div class="product-price">${formatCurrency(p.price)}</div>
+                            ${!isService ? `<div class="product-stock">Stock: ${p.qty}</div>` : '<div class="product-stock">Unlimited</div>'}
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            function populateProductSelect(products) {
+                const select = document.getElementById('posProductSelect');
+                select.innerHTML = '<option value="">Select product...</option>' +
+                    products.map(p => `<option value="${p.id}">${p.name} (${formatCurrency(p.price)})</option>`).join('');
+            }
+
+            window.filterPOSProducts = function() {
+                const query = document.getElementById('posSearch').value.toLowerCase().trim();
+                if (!query) { renderPOSProducts(posProducts); return; }
+                const filtered = posProducts.filter(p => p.name.toLowerCase().includes(query));
+                renderPOSProducts(filtered);
+            };
+
+            window.addSelectedProduct = function() {
+                const id = document.getElementById('posProductSelect').value;
+                if (!id) { toast('Select a product', '⚠️'); return; }
+                const qty = parseInt(document.getElementById('posQtyInput').value) || 1;
+                if (qty <= 0) { toast('Enter valid quantity', '⚠️'); return; }
+                const product = posProducts.find(p => p.id === id);
+                if (!product) { toast('Product not found', '⚠️'); return; }
+                if (product.type !== 'service' && qty > product.qty) { toast('Not enough stock', '⚠️'); return; }
+                const existing = posCart.find(item => item.id === id);
+                if (existing) {
+                    if (product.type !== 'service' && existing.qty + qty > product.qty) { toast('Not enough stock',
+                            '⚠️'); return; }
+                    existing.qty += qty;
+                } else {
+                    posCart.push({ id: id, name: product.name, price: product.price, qty: qty, type: product.type,
+                        refId: product.refId });
+                }
+                renderCart();
+            };
+
+            window.addToCart = function(productId) {
+                const product = posProducts.find(p => p.id === productId);
+                if (!product) return;
+                if (product.type !== 'service' && product.qty <= 0) { toast('Out of stock', '⚠️'); return; }
+                const existing = posCart.find(item => item.id === productId);
+                if (existing) {
+                    if (product.type !== 'service' && existing.qty >= product.qty) { toast('Not enough stock',
+                        '⚠️'); return; }
+                    existing.qty += 1;
+                } else {
+                    posCart.push({ id: productId, name: product.name, price: product.price, qty: 1, type: product.type,
+                        refId: product.refId });
+                }
+                renderCart();
+            };
+
+            window.addCustomPOSItem = function() {
+                const name = document.getElementById('posCustomName').value.trim();
+                const price = parseFloat(document.getElementById('posCustomPrice').value);
+                if (!name || !price || price <= 0) { toast('Enter name and valid price', '⚠️'); return; }
+                const id = 'custom_' + uid();
+                posCart.push({ id, name, price, qty: 1, type: 'custom', refId: null });
+                document.getElementById('posCustomName').value = '';
+                document.getElementById('posCustomPrice').value = '';
+                renderCart();
+            };
+
+            function renderCart() {
+                const container = document.getElementById('posCartItems');
+                if (!posCart.length) {
+                    container.innerHTML = '<p class="text-muted-light small">No items in cart.</p>';
+                    document.getElementById('cartCount').textContent = '0';
+                    document.getElementById('posSubtotal').textContent = formatCurrency(0);
+                    document.getElementById('posTotal').textContent = formatCurrency(0);
+                    document.getElementById('posTendered').value = '';
+                    document.getElementById('posChange').textContent = 'Change: R0.00';
+                    return;
+                }
+                let html = '';
+                let subtotal = 0;
+                posCart.forEach((item, index) => {
+                    const total = item.price * item.qty;
+                    subtotal += total;
+                    html += `
+                        <div class="pos-cart-item">
+                            <span class="item-name">${item.name}</span>
+                            <div class="item-qty">
+                                <button onclick="adjustCartQty(${index}, -1)">−</button>
+                                <span>${item.qty}</span>
+                                <button onclick="adjustCartQty(${index}, 1)">+</button>
+                            </div>
+                            <span class="item-total">${formatCurrency(total)}</span>
+                            <span class="item-remove" onclick="removeCartItem(${index})">✕</span>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+                document.getElementById('cartCount').textContent = posCart.reduce((s, i) => s + i.qty, 0);
+                document.getElementById('posSubtotal').textContent = formatCurrency(subtotal);
+                document.getElementById('posTotal').textContent = formatCurrency(subtotal);
+                document.getElementById('posTendered').value = '';
+                document.getElementById('posChange').textContent = 'Change: R0.00';
+            }
+
+            window.adjustCartQty = function(index, delta) {
+                const item = posCart[index];
+                if (!item) return;
+                const newQty = item.qty + delta;
+                if (newQty <= 0) { removeCartItem(index); return; }
+                if (item.type !== 'custom' && item.type !== 'service') {
+                    const product = posProducts.find(p => p.id === item.id);
+                    if (product && newQty > product.qty) { toast('Not enough stock', '⚠️'); return; }
+                }
+                item.qty = newQty;
+                renderCart();
+            };
+
+            window.removeCartItem = function(index) {
+                posCart.splice(index, 1);
+                renderCart();
+            };
+
+            window.clearCart = function() {
+                if (posCart.length && !confirm('Clear cart?')) return;
+                posCart = [];
+                renderCart();
+            };
+
+            window.calculateChange = function() {
+                const tendered = parseFloat(document.getElementById('posTendered').value) || 0;
+                const total = parseFloat(document.getElementById('posTotal').textContent.replace(/[^0-9.]/g, '')) || 0;
+                const change = tendered - total;
+                document.getElementById('posChange').textContent = `Change: ${formatCurrency(Math.max(0, change))}`;
+            };
+
+            async function loadCustomerDropdown() {
+                const customers = await db.customers.toArray();
+                const select = document.getElementById('posCustomer');
+                select.innerHTML = '<option value="">Walk-in</option>' +
+                    customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            }
+            window.loadCustomerDropdown = loadCustomerDropdown;
+
+            // --- Atomic POS Completion ---
+            window.completePOS = async function() {
+                if (isProcessing) return;
+                if (!posCart.length) { toast('Cart is empty', '⚠️'); return; }
+                const total = parseFloat(document.getElementById('posTotal').textContent.replace(/[^0-9.]/g, '')) || 0;
+                const tendered = parseFloat(document.getElementById('posTendered').value) || 0;
+                if (tendered < total) { toast('Insufficient tender', '⚠️'); return; }
+
+                isProcessing = true;
+                try {
+                    const customerId = document.getElementById('posCustomer').value;
+                    const customerName = customerId ? (await db.customers.get(parseInt(customerId)))?.name || '' :
+                    'Walk-in';
+                    const paymentMethod = document.getElementById('posPaymentMethod').value || 'Cash';
+
+                    await db.transaction('rw', [db.sales, db.inventory, db.perfumes, db.inventoryMovements],
+                        async () => {
+                            for (const item of posCart) {
+                                if (item.type === 'inventory') {
+                                    const invItem = await db.inventory.get(item.refId);
+                                    if (invItem) {
+                                        const beforeQty = invItem.qty || 0;
+                                        const afterQty = Math.max(0, beforeQty - item.qty);
+                                        await db.inventory.update(item.refId, { qty: afterQty });
+                                        await logInventoryMovement(item.refId, item.name, 'POS Sale', -item.qty,
+                                            beforeQty, afterQty, 'POS sale');
+                                    }
+                                } else if (item.type === 'perfume') {
+                                    const perfItem = await db.perfumes.get(item.refId);
+                                    if (perfItem) {
+                                        const beforeQty = perfItem.qty || 0;
+                                        const afterQty = Math.max(0, beforeQty - item.qty);
+                                        await db.perfumes.update(item.refId, { qty: afterQty });
+                                        await logInventoryMovement(item.refId, item.name, 'POS Sale', -item.qty,
+                                            beforeQty, afterQty, 'POS perfume sale');
+                                    }
+                                }
+                            }
+
+                            const saleItem = posCart.map(i => `${i.name} x${i.qty}`).join(', ');
+                            const count = await db.sales.count();
+                            const txId = generateTransactionId('SALE', today(), count + 1);
+                            await db.sales.add({
+                                transactionId: txId,
+                                item: saleItem,
+                                qty: posCart.reduce((s, i) => s + i.qty, 0),
+                                price: total,
+                                total: total,
+                                date: today(),
+                                status: 'Completed',
+                                source: 'POS',
+                                customer: customerName,
+                                paymentMethod: paymentMethod,
+                                items: JSON.stringify(posCart),
+                                created: new Date().toISOString()
+                            });
+                        });
+
+                    posCart = [];
+                    renderCart();
+                    await loadPOSProducts();
+                    renderAll();
+                    refreshDashboard();
+                    updatePOSReconciliation();
+                    renderLedger();
+                    toast(`Sale completed: ${formatCurrency(total)} (${paymentMethod})`, '💳');
+                    logAudit('pos_sale', { total, customer: customerName, paymentMethod });
+                    document.getElementById('posTendered').value = '';
+                    document.getElementById('posChange').textContent = 'Change: R0.00';
+                } catch (e) {
+                    toast('Sale failed: ' + e.message, '❌');
+                    console.error('POS error:', e);
+                } finally {
+                    isProcessing = false;
+                }
+            };
+
+            window.voidLastSale = async function() {
+                const last = await db.sales.orderBy('id').reverse().first();
+                if (!last) { toast('No sales to void', '⚠️'); return; }
+                if (!confirm(`Void sale ${last.transactionId || last.id}?`)) return;
+                await db.sales.update(last.id, { status: 'Voided' });
+                toast('Sale voided', '↺');
+                refreshDashboard();
+                updatePOSReconciliation();
+                renderLedger();
+                logAudit('pos_void', { id: last.id });
+            };
+
+            window.printReceipt = function() {
+                if (!posCart.length) { toast('Cart is empty', '⚠️'); return; }
+                const total = posCart.reduce((s, i) => s + i.price * i.qty, 0);
+                const lines = [
+                    '══════════════════════════',
+                    '  SISONKE HUB  ',
+                    '  RECEIPT  ',
+                    '══════════════════════════',
+                    `  Date: ${today()}`,
+                    `  Time: ${dayjs().format('HH:mm')}`,
+                    '──────────────────────────',
+                    ...posCart.map(i => `  ${i.name} x${i.qty}  ${formatCurrency(i.price*i.qty)}`),
+                    '──────────────────────────',
+                    `  TOTAL: ${formatCurrency(total)}`,
+                    '══════════════════════════',
+                    '  Thank you!  ',
+                    `  ${dayjs().format('YYYY-MM-DD HH:mm')}`
+                ];
+                const text = lines.join('\n');
+                const win = window.open('', '_blank', 'width=400,height=600');
+                if (win) {
+                    win.document.write('<pre style="font-family:monospace;padding:1rem;">' + text + '</pre>');
+                    win.document.close();
+                    win.print();
+                } else {
+                    toast('Please allow popups for receipt printing', '⚠️');
+                }
+            };
+
+            // --- Backup ---
+            window.createBackup = async function() {
+                try {
+                    const data = {
+                        version: '2.0',
+                        timestamp: new Date().toISOString(),
+                        business: 'SISONKE HUB',
+                        tables: {
+                            sales: await db.sales.toArray(),
+                            income: await db.income.toArray(),
+                            expenses: await db.expenses.toArray(),
+                            customers: await db.customers.toArray(),
+                            inventory: await db.inventory.toArray(),
+                            suppliers: await db.suppliers.toArray(),
+                            perfumes: await db.perfumes.toArray(),
+                            cvlocal: await db.cvlocal.toArray(),
+                            cvonline: await db.cvonline.toArray(),
+                            sweets: await db.sweets.toArray(),
+                            settings: await db.settings.toArray(),
+                            audit: await db.audit.toArray(),
+                            inventoryMovements: await db.inventoryMovements.toArray(),
+                            backups: await db.backups.toArray()
+                        }
+                    };
+                    const json = JSON.stringify(data, null, 2);
+                    const blob = new Blob([json], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    const fname = `sisonke_backup_${dayjs().format('YYYY-MM-DD_HHmm')}.json`;
+                    a.download = fname;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    const recordCounts = {};
+                    for (const [key, rows] of Object.entries(data.tables)) {
+                        recordCounts[key] = rows.length;
+                    }
+                    await db.backups.add({
+                        timestamp: new Date().toISOString(),
+                        size: Math.round(blob.size / 1024),
+                        filename: fname,
+                        version: '2.0',
+                        recordCounts
+                    });
+                    toast('Backup downloaded!', '💾');
+                    renderBackupHistory();
+                    logAudit('backup_create', { filename: fname, size: blob.size });
+                    await applyRetention();
+                } catch (e) { toast('Backup failed: ' + e.message, '❌'); }
+            };
+
+            async function applyRetention() {
+                const retentionDays = parseInt(document.getElementById('backupRetention').value) || 14;
+                const cutoff = dayjs().subtract(retentionDays, 'day').toISOString();
+                const old = await db.backups.where('timestamp').below(cutoff).toArray();
+                for (const b of old) {
+                    await db.backups.delete(b.id);
+                }
+                if (old.length) console.log(`Removed ${old.length} old backups`);
+            }
+
+            window.applyBackupSettings = function() {
+                const retention = document.getElementById('backupRetention').value;
+                const frequency = document.getElementById('backupFrequency').value;
+                localStorage.setItem('sh-backup-retention', retention);
+                localStorage.setItem('sh-backup-frequency', frequency);
+                toast(`Backup settings applied: ${frequency}, ${retention} days retention`, '⚙️');
+                applyRetention();
+                logAudit('backup_settings', { retention, frequency });
+            };
+
+            window.restoreBackup = async function() {
+                const input = document.getElementById('restoreFile');
+                if (!input.files || !input.files[0]) { toast('Select a backup file', '⚠️'); return; }
+                try {
+                    const text = await input.files[0].text();
+                    const data = JSON.parse(text);
+                    if (!data.tables) { toast('Invalid backup file', '❌'); return; }
+                    if (!confirm('Restore will overwrite all current data. Continue?')) return;
+                    await Promise.all([
+                        db.sales.clear(), db.income.clear(), db.expenses.clear(),
+                        db.customers.clear(), db.inventory.clear(), db.suppliers.clear(),
+                        db.perfumes.clear(), db.cvlocal.clear(), db.cvonline.clear(),
+                        db.sweets.clear(), db.settings.clear(), db.audit.clear(),
+                        db.inventoryMovements.clear(), db.backups.clear()
+                    ]);
+                    for (const [key, rows] of Object.entries(data.tables)) {
+                        if (rows && rows.length
